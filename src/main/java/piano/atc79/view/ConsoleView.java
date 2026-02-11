@@ -1,8 +1,6 @@
 package piano.atc79.view;
 
-import piano.atc79.model.Airport;
-import piano.atc79.model.Flight;
-import piano.atc79.model.Score;
+import piano.atc79.model.*;
 
 import java.util.List;
 

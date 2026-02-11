@@ -42,9 +42,11 @@ public class PhysicsEngine {
 
         int diff = (target - current + 360) % 360;
 
-        if (diff > 180) {
-            flight.setHeading(current + TURNING_RATE);
+        if (diff <= TURNING_RATE) {
+            flight.setHeading(target);
         } else if (diff < 180) {
+            flight.setHeading(current + TURNING_RATE);
+        } else if (diff > 180) {
             flight.setHeading(current - TURNING_RATE);
         }
 

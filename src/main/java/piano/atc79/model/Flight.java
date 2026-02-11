@@ -77,6 +77,14 @@ public class Flight {
         this.fuel = fuel;
     }
 
+    public void setTargetHeading(int targetHeading) {
+        this.targetHeading = targetHeading;
+    }
+
+    public void setTargetAltitude(int targetAltitude) {
+        this.targetAltitude = targetAltitude;
+    }
+
     private double calculateFuel() {
         return model.getMaxFuel() * (0.7 + Math.random() * 0.3);
     }
