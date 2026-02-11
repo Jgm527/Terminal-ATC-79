@@ -65,6 +65,10 @@ public class Flight {
         return targetAltitude;
     }
 
+    public void setAltitude(int altitude) {
+        this.altitude = altitude;
+    }
+
     private double calculateFuel() {
         return model.getMaxFuel() * (0.7 + Math.random() * 0.3);
     }
