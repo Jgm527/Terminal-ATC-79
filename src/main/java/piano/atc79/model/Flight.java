@@ -11,6 +11,7 @@ public class Flight {
     private FlightStatus status;
     private int targetHeading;
     private int targetAltitude;
+    private int targetSpeed;
 
     public Flight(String callsign, AircraftModel model, Position currentPosition, int heading, int speed, int altitude) {
         this.callsign = callsign;
@@ -23,6 +24,7 @@ public class Flight {
         this.status = FlightStatus.EN_ROUTE;
         this.targetHeading = heading;
         this.targetAltitude = altitude;
+        this.targetSpeed = speed;
     }
 
     public String getCallsign() {
@@ -65,12 +67,20 @@ public class Flight {
         return targetAltitude;
     }
 
+    public int getTargetSpeed() {
+        return targetSpeed;
+    }
+
     public void setAltitude(int altitude) {
         this.altitude = altitude;
     }
 
     public void setHeading(int heading) {
         this.heading = heading;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 
     public void setFuel(double fuel) {
@@ -83,6 +93,10 @@ public class Flight {
 
     public void setTargetAltitude(int targetAltitude) {
         this.targetAltitude = targetAltitude;
+    }
+
+    public void setTargetSpeed(int targetSpeed) {
+        this.targetSpeed = targetSpeed;
     }
 
     private double calculateFuel() {

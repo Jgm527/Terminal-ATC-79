@@ -5,6 +5,9 @@ import piano.atc79.controller.*;
 import piano.atc79.logic.*;
 import piano.atc79.view.*;
 
+import java.io.IOException;
+import java.util.Scanner;
+
 public class Main {
     static void main() {
         System.out.println("=== INICIALIZANDO SIMULADOR ATC-79 ===\n");
@@ -23,7 +26,7 @@ public class Main {
         // 3. Creamos un Modelo de Avión (Boeing 737)
         // Consumo 15.5, Tanque 26000
         AircraftModel b737 = new AircraftModel("B737", "Boeing 737-800",
-                AircraftCategory.MEDIUM, 250, 15.5, 26000);
+                AircraftCategory.MEDIUM, 250, 2500.0, 26000);
 
         // 4. Creamos un Vuelo real
         Position avionPos = new Position(10.5, 12.0, 15000); // Está a 15,000 pies
@@ -61,6 +64,7 @@ public class Main {
 
         myFlight.setTargetHeading(90);
         myFlight.setTargetAltitude(20000);
+        myFlight.setTargetSpeed(190);
 
         // BUCLE DE JUEGO MANUAL (30 segundos)
         for(int i = 0; i < 120; i++) {
@@ -70,6 +74,19 @@ public class Main {
             if(controller.isGameOver()) {
                 view.showGameOver(controller.getScore());
                 break;
+            }
+
+
+            try {
+                if (System.in.available() > 0) {
+                    Scanner sc = new Scanner(System.in);
+                    String input = sc.nextLine();
+
+                    CommandParser parser = new CommandParser();
+                    parser.parse(input, controller.getFlights());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
             try {

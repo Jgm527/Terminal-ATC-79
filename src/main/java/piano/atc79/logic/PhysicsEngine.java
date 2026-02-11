@@ -6,11 +6,13 @@ import piano.atc79.model.Position;
 public class PhysicsEngine {
     private static final int CLIMB_RATE = 15;
     private static final int TURNING_RATE = 3;
+    private static final int SPEEDING_RATE = 2;
 
     public void updatePosition(Flight flight) {
         updateHeading(flight);
         updateLatitude(flight);
         updateAltitude(flight);
+        updateSpeed(flight);
     }
 
     private void updateLatitude(Flight flight) {
@@ -56,5 +58,16 @@ public class PhysicsEngine {
         }
 
         flight.setHeading((flight.getHeading() + 360) % 360);
+    }
+
+    private void updateSpeed(Flight flight) {
+        int current = flight.getSpeed();
+        int target = flight.getTargetSpeed();
+
+        if (current < target) {
+            flight.setSpeed(Math.min(current + SPEEDING_RATE, target));
+        } else if (current > target) {
+            flight.setSpeed(Math.max(current - SPEEDING_RATE, target));
+        }
     }
 }
