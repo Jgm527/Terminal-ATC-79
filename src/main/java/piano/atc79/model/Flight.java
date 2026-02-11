@@ -73,6 +73,10 @@ public class Flight {
         this.heading = heading;
     }
 
+    public void setFuel(double fuel) {
+        this.fuel = fuel;
+    }
+
     private double calculateFuel() {
         return model.getMaxFuel() * (0.7 + Math.random() * 0.3);
     }
