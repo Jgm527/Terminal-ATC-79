@@ -5,14 +5,12 @@ public class Position {
     private double y;
     private double z;
 
-    //Constructores
     public Position(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    //Getters y setters
     public double getX() {
         return x;
     }
@@ -37,7 +35,11 @@ public class Position {
         this.z = z;
     }
 
-    //Otros métodos
+    @Override
+    public String toString() {
+        return String.format("[X:%.1f, Y:%.1f, Alt:%.0f]", x, y, z);
+    }
+
     public double distanceTo(Position other) {
         double dx = this.x - other.x;
         double dy = this.y - other.y;
