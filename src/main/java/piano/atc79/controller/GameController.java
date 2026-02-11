@@ -19,6 +19,22 @@ public class GameController {
     private FuelManager fuelManager;
     private boolean gameOver;
 
+    public Score getScore() {
+        return score;
+    }
+
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public Airport getAirport() {
+        return airport;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
     public GameController(Airport airport) {
         this.airport = airport;
         flights = new ArrayList<Flight>();
@@ -27,6 +43,12 @@ public class GameController {
         conflictDetector = new ConflictDetector();
         fuelManager = new FuelManager();
         gameOver = false;
+    }
+
+    public void addFlight(Flight f) {
+        if (f != null) {
+            flights.add(f);
+        }
     }
 
     public void update() {
