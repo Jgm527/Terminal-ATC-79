@@ -5,8 +5,10 @@ import piano.atc79.model.Position;
 
 public class PhysicsEngine {
     private static final int CLIMB_RATE = 15;
+    private static final int TURNING_RATE = 3;
 
     public void updatePosition(Flight flight) {
+        updateHeading(flight);
         updateLatitude(flight);
         updateAltitude(flight);
     }
@@ -32,5 +34,19 @@ public class PhysicsEngine {
         } else if (current > target) {
             flight.setAltitude(Math.max(current - CLIMB_RATE, target));
         }
+    }
+
+    private void updateHeading(Flight flight) {
+        int current = flight.getHeading();
+        int target = flight.getTargetHeading();
+
+        if (current < target) {
+            flight.setHeading(Math.min(current + TURNING_RATE, target));
+        } else if (current > target) {
+            flight.setHeading(Math.max(current - TURNING_RATE, target));
+        }
+
+        if (flight.getHeading() >= 360) flight.setHeading(flight.getHeading() - 360);
+        if (flight.getHeading() < 0) flight.setHeading(flight.getHeading() + 360);
     }
 }
