@@ -40,13 +40,19 @@ public class PhysicsEngine {
         int current = flight.getHeading();
         int target = flight.getTargetHeading();
 
-        if (current < target) {
-            flight.setHeading(Math.min(current + TURNING_RATE, target));
-        } else if (current > target) {
-            flight.setHeading(Math.max(current - TURNING_RATE, target));
+        int diff = (target - current + 360) % 360;
+
+        if (diff > 180) {
+            flight.setHeading(current + TURNING_RATE);
+        } else if (diff < 180) {
+            flight.setHeading(current - TURNING_RATE);
         }
 
-        if (flight.getHeading() >= 360) flight.setHeading(flight.getHeading() - 360);
-        if (flight.getHeading() < 0) flight.setHeading(flight.getHeading() + 360);
+        if (Math.abs(target - flight.getHeading()) < TURNING_RATE ||
+                Math.abs(target - flight.getHeading()) > 360 - TURNING_RATE) {
+            flight.setHeading(target);
+        }
+
+        flight.setHeading((flight.getHeading() + 360) % 360);
     }
 }
