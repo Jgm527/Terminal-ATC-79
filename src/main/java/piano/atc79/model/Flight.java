@@ -25,6 +25,46 @@ public class Flight {
         this.targetAltitude = altitude;
     }
 
+    public String getCallsign() {
+        return callsign;
+    }
+
+    public AircraftModel getModel() {
+        return model;
+    }
+
+    public Position getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public int getHeading() {
+        return heading;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getAltitude() {
+        return altitude;
+    }
+
+    public double getFuel() {
+        return fuel;
+    }
+
+    public FlightStatus getStatus() {
+        return status;
+    }
+
+    public int getTargetHeading() {
+        return targetHeading;
+    }
+
+    public int getTargetAltitude() {
+        return targetAltitude;
+    }
+
     private double calculateFuel() {
         return model.getMaxFuel() * (0.7 + Math.random() * 0.3);
     }
