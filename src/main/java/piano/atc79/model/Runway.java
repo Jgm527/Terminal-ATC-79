@@ -36,4 +36,23 @@ public class Runway {
     public double getLength() {
         return startPoint.distanceTo(endPoint);
     }
+
+    public int getHeading() {
+        double dx = startPoint.getX() - endPoint.getX();
+        double dy = startPoint.getY() - endPoint.getY();
+        double runwayHeadingRadians = Math.atan2(dy, dx);
+        double runwayHeadingDegrees = Math.toDegrees(runwayHeadingRadians);
+
+        return (int) (runwayHeadingDegrees + 360) % 360;
+    }
+
+    public boolean isAligned(Flight flight) {
+        double distance = flight.getCurrentPosition().distanceTo(this.startPoint);
+
+        int diff = Math.abs(flight.getHeading() - getHeading());
+        if (diff > 180) {
+            diff = 360 - diff;
+        }
+        return distance < 3.0 && diff < 10;
+    }
 }

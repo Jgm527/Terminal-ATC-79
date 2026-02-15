@@ -102,4 +102,11 @@ public class Flight {
     private double calculateFuel() {
         return model.getMaxFuel() * (0.7 + Math.random() * 0.3);
     }
+
+    public boolean isReadyToLand() {
+        boolean altitudeOk = this.altitude < 1000;
+        boolean speedOk = this.speed < 160;
+
+        return altitudeOk && speedOk;
+    }
 }

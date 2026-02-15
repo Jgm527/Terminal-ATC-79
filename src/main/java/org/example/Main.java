@@ -76,7 +76,6 @@ public class Main {
                 break;
             }
 
-
             try {
                 if (System.in.available() > 0) {
                     Scanner sc = new Scanner(System.in);
