@@ -1,7 +1,6 @@
 package piano.atc79.controller;
 
 import piano.atc79.logic.ConflictDetector;
-import piano.atc79.logic.FuelManager;
 import piano.atc79.model.Airport;
 import piano.atc79.model.Flight;
 import piano.atc79.model.Score;
@@ -14,7 +13,6 @@ public class GameController {
     private List<Flight> flights;
     private Score score;
     private ConflictDetector conflictDetector;
-    private FuelManager fuelManager;
     private boolean gameOver;
 
     public Score getScore() {
@@ -38,7 +36,6 @@ public class GameController {
         flights = new ArrayList<Flight>();
         score = new Score();
         conflictDetector = new ConflictDetector();
-        fuelManager = new FuelManager();
         gameOver = false;
     }
 
@@ -53,7 +50,7 @@ public class GameController {
 
         for (Flight f : flights) {
             f.updatePosition();
-            fuelManager.updateFuel(f);
+            f.updateFuel();
 
             if (f.getFuel() <= 0) {
                 gameOver = true;

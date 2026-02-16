@@ -165,6 +165,15 @@ public class Flight {
         }
     }
 
+    public void updateFuel() {
+        double consumptionPerSecond = getModel().getFuelConsumption() / 3600.0;
+        double newFuel = getFuel() - consumptionPerSecond;
+
+        if (newFuel < 0) { newFuel = 0; }
+
+        setFuel(newFuel);
+    }
+
     public boolean isReadyToLand() {
         boolean altitudeOk = this.altitude < 1000;
         boolean speedOk = this.speed < 160;
