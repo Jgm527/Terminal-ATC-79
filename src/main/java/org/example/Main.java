@@ -29,8 +29,8 @@ public class Main {
                 AircraftCategory.MEDIUM, 250, 2500.0, 26000, 15, 3, 3);
 
         // 4. Creamos un Vuelo real
-        Position avionPos = new Position(10.5, 12.0, 15000); // Está a 15,000 pies
-        Flight myFlight = new Flight("IBE1234", b737, avionPos, 70, 240, 21000);
+        Position avionPos = new Position(-5.0, -2.0, 2000);
+        Flight myFlight = new Flight("IBE1234", b737, avionPos, 72, 140, 400);
 
         // 5. Mostramos la "Foto" del sistema
         System.out.println("Aeropuerto: " + alicante.getName() + " [" + alicante.getId() + "]");
@@ -61,13 +61,8 @@ public class Main {
         controller.addFlight(myFlight);
         ConsoleView view = new ConsoleView();
 
-
-        myFlight.setTargetHeading(90);
-        myFlight.setTargetAltitude(20000);
-        myFlight.setTargetSpeed(190);
-
-        // BUCLE DE JUEGO MANUAL (30 segundos)
-        for(int i = 0; i < 120; i++) {
+        // BUCLE DE JUEGO MANUAL (3600 segundos)
+        for(int i = 0; i < 3600; i++) {
             controller.update();
             view.showInformation(controller.getAirport(), controller.getFlights(), controller.getScore());
 
@@ -82,7 +77,7 @@ public class Main {
                     String input = sc.nextLine();
 
                     CommandParser parser = new CommandParser();
-                    parser.parse(input, controller.getFlights());
+                    parser.parse(input, controller.getFlights(), alicante);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

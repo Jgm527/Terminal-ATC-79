@@ -35,4 +35,13 @@ public class Airport {
     public void addRunway(Runway runway) {
         runways.add(runway);
     }
+
+    public Runway findRunway(String id) {
+        for (Runway r : runways) {
+            if (r.getId().equalsIgnoreCase(id)) {
+                return r;
+            }
+        }
+        return null;
+    }
 }

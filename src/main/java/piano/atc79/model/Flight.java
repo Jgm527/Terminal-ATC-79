@@ -12,6 +12,8 @@ public class Flight {
     private int targetHeading;
     private int targetAltitude;
     private int targetSpeed;
+    private Runway assignedRunway;
+    private String approachType;
 
     public Flight(String callsign, AircraftModel model, Position currentPosition, int heading, int speed, int altitude) {
         this.callsign = callsign;
@@ -71,6 +73,10 @@ public class Flight {
         return targetSpeed;
     }
 
+    public Runway getAssignedRunway() {
+        return assignedRunway;
+    }
+
     public void setAltitude(int altitude) {
         this.altitude = altitude;
     }
@@ -97,6 +103,14 @@ public class Flight {
 
     public void setTargetSpeed(int targetSpeed) {
         this.targetSpeed = targetSpeed;
+    }
+
+    public void setAssignedRunway(Runway assignedRunway) {
+        this.assignedRunway = assignedRunway;
+    }
+
+    public void setApproachType(String approachType) {
+        this.approachType = approachType;
     }
 
     private double calculateFuel() {

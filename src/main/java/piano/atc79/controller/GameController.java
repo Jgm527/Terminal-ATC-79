@@ -46,11 +46,19 @@ public class GameController {
     }
 
     public void update() {
-        if (gameOver) return;
-
-        for (Flight f : flights) {
+        for (int i = flights.size() - 1; i >= 0; i--) {
+            Flight f = flights.get(i);
             f.updatePosition();
             f.updateFuel();
+
+            if (f.getAssignedRunway() != null) {
+                if (f.getAssignedRunway().isAligned(f) && f.isReadyToLand()) {
+                    System.out.println("¡CRÍTICO: " + f.getCallsign() + " ha aterrizado con éxito!");
+                    score.addLanding(500);
+                    flights.remove(i);
+                    continue;
+                }
+            }
 
             if (f.getFuel() <= 0) {
                 gameOver = true;
