@@ -103,6 +103,68 @@ public class Flight {
         return model.getMaxFuel() * (0.7 + Math.random() * 0.3);
     }
 
+    public void updatePosition() {
+        updateHeading();
+        updateLatitude();
+        updateAltitude();
+        updateSpeed();
+    }
+
+    private void updateLatitude() {
+        double speedPerSeconds = getSpeed() / 3600.0;
+        double rad = Math.toRadians(getHeading());
+
+        double deltaX = speedPerSeconds * Math.sin(rad);
+        double deltaY = speedPerSeconds * Math.cos(rad);
+
+        Position pos = getCurrentPosition();
+        pos.setX(pos.getX() + deltaX);
+        pos.setY(pos.getY() + deltaY);
+    }
+
+    private void updateAltitude() {
+        int current = getAltitude();
+        int target = getTargetAltitude();
+
+        if (current < target) {
+            setAltitude(Math.min(current + getModel().getClimbRate(), target));
+        } else if (current > target) {
+            setAltitude(Math.max(current - getModel().getClimbRate(), target));
+        }
+    }
+
+    private void updateHeading() {
+        int current = getHeading();
+        int target = getTargetHeading();
+
+        int diff = (target - current + 360) % 360;
+
+        if (diff <= getModel().getTurningRate()) {
+            setHeading(target);
+        } else if (diff < 180) {
+            setHeading(current + getModel().getTurningRate());
+        } else if (diff > 180) {
+            setHeading(current - getModel().getTurningRate());
+        }
+
+        if (Math.abs(target - getHeading()) < getModel().getTurningRate() || Math.abs(target - getHeading()) > 360 - getModel().getTurningRate()) {
+            setHeading(target);
+        }
+
+        setHeading((getHeading() + 360) % 360);
+    }
+
+    private void updateSpeed() {
+        int current = getSpeed();
+        int target = getTargetSpeed();
+
+        if (current < target) {
+            setSpeed(Math.min(current + getModel().getSpeedingRate(), target));
+        } else if (current > target) {
+            setSpeed(Math.max(current - getModel().getSpeedingRate(), target));
+        }
+    }
+
     public boolean isReadyToLand() {
         boolean altitudeOk = this.altitude < 1000;
         boolean speedOk = this.speed < 160;

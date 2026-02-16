@@ -26,7 +26,7 @@ public class Main {
         // 3. Creamos un Modelo de Avión (Boeing 737)
         // Consumo 15.5, Tanque 26000
         AircraftModel b737 = new AircraftModel("B737", "Boeing 737-800",
-                AircraftCategory.MEDIUM, 250, 2500.0, 26000);
+                AircraftCategory.MEDIUM, 250, 2500.0, 26000, 15, 3, 3);
 
         // 4. Creamos un Vuelo real
         Position avionPos = new Position(10.5, 12.0, 15000); // Está a 15,000 pies
