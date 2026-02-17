@@ -5,6 +5,7 @@ import piano.atc79.controller.*;
 import piano.atc79.logic.*;
 import piano.atc79.view.*;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -59,35 +60,14 @@ public class Main {
 
         GameController controller = new GameController(alicante);
         controller.addFlight(myFlight);
-        ConsoleView view = new ConsoleView();
 
-        // BUCLE DE JUEGO MANUAL (3600 segundos)
-        for(int i = 0; i < 3600; i++) {
-            controller.update();
-            view.showInformation(controller.getAirport(), controller.getFlights(), controller.getScore());
-
-            if(controller.isGameOver()) {
-                view.showGameOver(controller.getScore());
-                break;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                RadarView radar = new RadarView();
+                radar.show();
             }
+        });
 
-            try {
-                if (System.in.available() > 0) {
-                    Scanner sc = new Scanner(System.in);
-                    String input = sc.nextLine();
-
-                    CommandParser parser = new CommandParser();
-                    parser.parse(input, controller.getFlights(), alicante);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                System.out.println("El simulador se ha interrumpido.");
-            }
-        }
     }
 }
