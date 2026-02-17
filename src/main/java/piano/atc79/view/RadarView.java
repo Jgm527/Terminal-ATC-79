@@ -1,19 +1,15 @@
 package piano.atc79.view;
 
+import piano.atc79.controller.GameController;
+
 import javax.swing.*;
+import java.awt.*;
 
-public class RadarView {
-    private JFrame window;
+public class RadarView extends JPanel {
+    private GameController gameController;
 
-    public RadarView() {
-        window = new JFrame();
-        window.setTitle("Terminal ATC 79");
-        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        window.setSize(800, 600);
-        window.setLocationRelativeTo(null);
-    }
-
-    public void show() {
-        window.setVisible(true);
+    public RadarView(GameController gameController) {
+        this.gameController = gameController;
+        setBackground(Color.black); // ya puedo dibujar lo q sea :D
     }
 }
