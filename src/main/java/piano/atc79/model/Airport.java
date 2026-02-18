@@ -24,7 +24,7 @@ public class Airport {
         return name;
     }
 
-    public List getRunways() {
+    public List<Runway> getRunways() {
         return runways;
     }
 

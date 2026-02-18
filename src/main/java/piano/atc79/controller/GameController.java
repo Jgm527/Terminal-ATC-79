@@ -1,10 +1,12 @@
 package piano.atc79.controller;
 
+import piano.atc79.logic.CommandParser;
 import piano.atc79.logic.ConflictDetector;
 import piano.atc79.model.Airport;
 import piano.atc79.model.Flight;
 import piano.atc79.model.Score;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,9 @@ public class GameController {
     private List<Flight> flights;
     private Score score;
     private ConflictDetector conflictDetector;
+    private CommandParser commandParser;
     private boolean gameOver;
+    private Timer gameTimer;
 
     public Score getScore() {
         return score;
@@ -36,6 +40,7 @@ public class GameController {
         flights = new ArrayList<Flight>();
         score = new Score();
         conflictDetector = new ConflictDetector();
+        commandParser = new CommandParser();
         gameOver = false;
     }
 
@@ -43,6 +48,17 @@ public class GameController {
         if (f != null) {
             flights.add(f);
         }
+    }
+
+    public void start() {
+        gameTimer = new Timer(1000, e -> {
+            if (!gameOver) {
+                update();
+            } else {
+                gameTimer.stop();
+            }
+        });
+        gameTimer.start();
     }
 
     public void update() {
@@ -75,5 +91,9 @@ public class GameController {
                 }
             }
         }
+    }
+
+    public void executeCommand(String command) {
+        commandParser.parse(command, this.flights, this.airport);
     }
 }
