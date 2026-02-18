@@ -84,6 +84,10 @@ public class GameController {
                 }
             }
 
+            if (view != null) {
+                view.updateFlightInfo(flights);
+            }
+
             if (f.getFuel() <= 0) {
                 gameOver = true;
             }

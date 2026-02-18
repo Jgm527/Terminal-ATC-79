@@ -1,11 +1,12 @@
 package piano.atc79.view;
 
 import piano.atc79.controller.GameController;
+import piano.atc79.model.Flight;
+
+import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 public class WindowView {
     private JFrame window;
@@ -52,6 +53,10 @@ public class WindowView {
         infoArea.setCaretColor(Color.BLACK);
         infoArea.setEditable(false);
         sidePanel.add(infoArea);
+        JScrollPane scrollInfo = new JScrollPane(infoArea);
+        scrollInfo.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollInfo.setPreferredSize(new Dimension(window.getWidth() / 3, window.getHeight() / 3 ));
+        sidePanel.add(scrollInfo);
 
         JLabel errorLabel = new JLabel("LOGS DEL SISTEMA");
         errorLabel.setBackground(Color.BLACK);
@@ -75,6 +80,16 @@ public class WindowView {
         errorLog.append(message + "\n");
 
         errorLog.setCaretPosition(errorLog.getDocument().getLength());
+    }
+
+    public void updateFlightInfo(List<Flight> flights) {
+        StringBuilder sb = new StringBuilder();
+        for (Flight f : flights) {
+            sb.append(String.format("%10s | ALT: %06d | HDG: %03d | SPD: %03d |FUEL: %.2f\n",
+                    f.getCallsign(), f.getAltitude(), f.getHeading(), f.getSpeed(), f.getFuel()));
+        }
+        infoArea.setForeground(Color.WHITE);
+        infoArea.setText(sb.toString());
     }
 
     public void show() {
