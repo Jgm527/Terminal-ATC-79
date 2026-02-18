@@ -31,8 +31,6 @@ public class Main {
         AircraftModel a320 = new AircraftModel("A320", "Airbus A320-400",
                 AircraftCategory.MEDIUM, 260, 2500.0, 28000, 16, 3, 3);
 
-        System.out.println(r10.getHeading());
-        System.out.println(r35.getHeading());
         // 4. Creamos un Vuelo real
         Position flightPos = new Position(-2.0, -0.6, 400);
         Flight myFlight = new Flight("IBE1234", b737, flightPos, 72, 140, 400);
@@ -50,6 +48,7 @@ public class Main {
             @Override
             public void run() {
                 WindowView radar = new WindowView(controller);
+                controller.setView(radar);
                 radar.show();
             }
         });
