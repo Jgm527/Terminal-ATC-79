@@ -29,6 +29,14 @@ public class WindowView {
             commandInput.setText("");
         });
         window.add(commandInput, BorderLayout.SOUTH);
+
+        JPanel sidePanel = new JPanel();
+        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.setPreferredSize(new Dimension(window.getWidth() / 3, window.getHeight()));
+        sidePanel.setBackground(Color.BLACK);
+
+
+        window.add(sidePanel, BorderLayout.EAST);
     }
 
     public void show() {
