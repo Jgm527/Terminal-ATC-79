@@ -19,7 +19,6 @@ public class Main {
         Runway r10 = new Runway("10L", start10, end10);
         alicante.addRunway(r10);
 
-
         Position start35 = new Position(1.6, 0.5, 0);
         Position end35 = new Position(0, 0, 0);
         Runway r35 = new Runway("35", start35, end35);
@@ -32,9 +31,10 @@ public class Main {
         AircraftModel a320 = new AircraftModel("A320", "Airbus A320-400",
                 AircraftCategory.MEDIUM, 260, 2500.0, 28000, 16, 3, 3);
 
-
+        System.out.println(r10.getHeading());
+        System.out.println(r35.getHeading());
         // 4. Creamos un Vuelo real
-        Position flightPos = new Position(-5.0, -2.0, 2000);
+        Position flightPos = new Position(-2.0, -0.6, 400);
         Flight myFlight = new Flight("IBE1234", b737, flightPos, 72, 140, 400);
 
         Position flightPos2 = new Position(7.8, 1.45, 2000);

@@ -38,12 +38,13 @@ public class Runway {
     }
 
     public int getHeading() {
-        double dx = startPoint.getX() - endPoint.getX();
-        double dy = startPoint.getY() - endPoint.getY();
-        double runwayHeadingRadians = Math.atan2(dy, dx);
-        double runwayHeadingDegrees = Math.toDegrees(runwayHeadingRadians);
+        double dx = endPoint.getX() - startPoint.getX();
+        double dy = endPoint.getY() - startPoint.getY();
 
-        return (int) (runwayHeadingDegrees + 360) % 360;
+        double radians = Math.atan2(dx, dy);
+        double degrees = Math.toDegrees(radians);
+
+        return (int) (degrees + 360) % 360;
     }
 
     public boolean isAligned(Flight flight) {
