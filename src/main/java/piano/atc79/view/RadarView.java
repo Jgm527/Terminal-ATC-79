@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class RadarView extends JPanel {
     private GameController gameController;
-    private static final int SCALE = 50;
+    private static final int SCALE = 20;
 
     public RadarView(GameController gameController) {
         this.gameController = gameController;
