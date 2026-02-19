@@ -1,7 +1,9 @@
 package piano.atc79.view;
 
 import piano.atc79.controller.GameController;
+import piano.atc79.model.Airport;
 import piano.atc79.model.Flight;
+import piano.atc79.model.Runway;
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class WindowView {
     private GameController gameController;
     private JTextArea infoArea;
     private JTextArea errorLog;
+    private JTextArea headerArea;
 
     public WindowView(GameController gameController) {
         this.gameController = gameController;
@@ -23,9 +26,11 @@ public class WindowView {
         window.setLocationRelativeTo(null);
         window.setLayout(new BorderLayout());
 
+        // Añadir radar a la ventana
         JPanel radar = new RadarView(gameController);
         window.add(radar, BorderLayout.CENTER);
 
+        // Añadir campo para comandos
         JTextField commandInput = new JTextField();
         commandInput.setBackground(Color.BLACK);
         commandInput.setForeground(Color.GREEN);
@@ -38,6 +43,7 @@ public class WindowView {
         });
         window.add(commandInput, BorderLayout.SOUTH);
 
+        // Añadir panel lateral
         JPanel sidePanel = new JPanel();
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.setPreferredSize(new Dimension(window.getWidth() / 3, window.getHeight()));
@@ -48,6 +54,7 @@ public class WindowView {
         dataLabel.setForeground(Color.WHITE);
         sidePanel.add(dataLabel);
 
+        // Añadir Area de info de aviones
         infoArea = new JTextArea();
         infoArea.setBackground(Color.BLACK);
         infoArea.setCaretColor(Color.BLACK);
@@ -63,6 +70,7 @@ public class WindowView {
         errorLabel.setForeground(Color.WHITE);
         sidePanel.add(errorLabel);
 
+        // Añadir Area de avisos y eventos
         errorLog = new JTextArea();
         errorLog.setBackground(Color.BLACK);
         errorLog.setCaretColor(Color.BLACK);
@@ -73,6 +81,27 @@ public class WindowView {
         sidePanel.add(scrollErrors);
 
         window.add(sidePanel, BorderLayout.EAST);
+
+        // Añadir Area de cabecera
+        headerArea = new JTextArea();
+        headerArea.setBackground(Color.BLACK);
+        headerArea.setCaretColor(Color.BLACK);
+        headerArea.setForeground(Color.WHITE);
+        headerArea.setEditable(false);
+        headerArea.setText(getHeaderStringSB());
+
+        window.add(headerArea, BorderLayout.NORTH);
+    }
+
+    private String getHeaderStringSB() {
+        Airport a = gameController.getAirport();
+        StringBuilder stringSB = new StringBuilder();
+        stringSB.append("Aeropuerto: " + a.getName() + " - " + a.getId() + " | " + a.getRunways().size() + " pistas → ");
+        for (Runway r : a.getRunways()) {
+            stringSB.append("| Pista " + r.getId() + ": " + r.getHeading() + "º  -  " + Math.round(r.getLength() * 100) / 100.0 + " millas \t");
+        }
+
+        return stringSB.toString();
     }
 
     public void logMessage(String message, Color color) {
@@ -83,13 +112,22 @@ public class WindowView {
     }
 
     public void updateFlightInfo(List<Flight> flights) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder stringSB = new StringBuilder();
         for (Flight f : flights) {
-            sb.append(String.format("%10s | ALT: %06d | HDG: %03d | SPD: %03d |FUEL: %.2f\n",
-                    f.getCallsign(), f.getAltitude(), f.getHeading(), f.getSpeed(), f.getFuel()));
+            String string = String.format("%5s \t%-15s %15s %15s\n ALT %6d   |   SPD %4d   |   HDNG %4d   |   FUEL %.2f\n\n",
+                    f.getCallsign(),
+                    f.getModel().getName(),
+                    f.getModel().getCategory(),
+                    f.getStatus(),
+                    f.getAltitude(),
+                    f.getSpeed(),
+                    f.getHeading(),
+                    f.getFuel());
+
+            stringSB.append(string);
         }
         infoArea.setForeground(Color.WHITE);
-        infoArea.setText(sb.toString());
+        infoArea.setText(stringSB.toString());
     }
 
     public void show() {
