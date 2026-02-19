@@ -7,7 +7,7 @@ public class ConflictDetector {
 
     public boolean areInConflict(Flight f1, Flight f2) {
         double horizontalDistance = f1.getCurrentPosition().distanceTo(f2.getCurrentPosition());
-        double verticalDistance = Math.abs(f1.getAltitude() - f2.getAltitude());
+        double verticalDistance = Math.abs(f1.getCurrentPosition().getZ() - f2.getCurrentPosition().getZ());
         double minHorizontalSeparation = Math.max(f1.getModel().getCategory().getMinSeparationNM(),
                 f2.getModel().getCategory().getMinSeparationNM());
 

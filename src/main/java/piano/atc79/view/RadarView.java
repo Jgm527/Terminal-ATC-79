@@ -88,7 +88,7 @@ public class RadarView extends JPanel {
 
         g2d.setColor(Color.GREEN);
         g2d.drawString(f.getCallsign(), flightPosition.x + 10, flightPosition.y);
-        g2d.drawString("Alt: " + f.getAltitude(), flightPosition.x + 10, flightPosition.y + 12);
+        g2d.drawString("Alt: " + f.getCurrentPosition().getZ(), flightPosition.x + 10, flightPosition.y + 12);
         g2d.drawString("Spd: " + f.getSpeed(), flightPosition.x + 10, flightPosition.y + 24);
     }
 

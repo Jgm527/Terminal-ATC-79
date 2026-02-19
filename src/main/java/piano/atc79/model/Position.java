@@ -1,11 +1,11 @@
 package piano.atc79.model;
 
 public class Position {
-    private double x;
-    private double y;
-    private double z;
+    private double x; //Millas
+    private double y; //Millas
+    private int z; //Pies
 
-    public Position(double x, double y, double z) {
+    public Position(double x, double y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -27,11 +27,11 @@ public class Position {
         this.y = y;
     }
 
-    public double getZ() {
+    public int getZ() {
         return z;
     }
 
-    public void setZ(double z) {
+    public void setZ(int z) {
         this.z = z;
     }
 

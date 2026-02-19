@@ -6,7 +6,6 @@ public class Flight {
     private Position currentPosition;
     private int heading;
     private int speed;
-    private int altitude;
     private double fuel;
     private FlightStatus status;
     private int targetHeading;
@@ -15,17 +14,16 @@ public class Flight {
     private Runway assignedRunway;
     private String approachType;
 
-    public Flight(String callsign, AircraftModel model, Position currentPosition, int heading, int speed, int altitude) {
+    public Flight(String callsign, AircraftModel model, Position currentPosition, int heading, int speed) {
         this.callsign = callsign;
         this.model = model;
         this.currentPosition = currentPosition;
         this.heading = heading;
         this.speed = speed;
-        this.altitude = altitude;
         this.fuel = calculateFuel();
         this.status = FlightStatus.EN_ROUTE;
         this.targetHeading = heading;
-        this.targetAltitude = altitude;
+        this.targetAltitude = getCurrentPosition().getZ();
         this.targetSpeed = speed;
     }
 
@@ -47,10 +45,6 @@ public class Flight {
 
     public int getSpeed() {
         return speed;
-    }
-
-    public int getAltitude() {
-        return altitude;
     }
 
     public double getFuel() {
@@ -77,24 +71,24 @@ public class Flight {
         return assignedRunway;
     }
 
-    public void setAltitude(int altitude) {
-        this.altitude = altitude;
-    }
-
-    public void setHeading(int heading) {
+    private void setHeading(int heading) {
         this.heading = heading;
     }
 
-    public void setSpeed(int speed) {
+    private void setSpeed(int speed) {
         this.speed = speed;
     }
 
-    public void setFuel(double fuel) {
+    private void setFuel(double fuel) {
         this.fuel = fuel;
     }
 
     public void setTargetHeading(int targetHeading) {
         this.targetHeading = targetHeading;
+    }
+
+    private void setAltitude(int altitude) {
+        currentPosition.setZ(altitude);
     }
 
     public void setTargetAltitude(int targetAltitude) {
@@ -137,7 +131,7 @@ public class Flight {
     }
 
     private void updateAltitude() {
-        int current = getAltitude();
+        int current = currentPosition.getZ();
         int target = getTargetAltitude();
 
         if (current < target) {
@@ -189,7 +183,7 @@ public class Flight {
     }
 
     public boolean isReadyToLand() {
-        boolean altitudeOk = this.altitude < 1000;
+        boolean altitudeOk = currentPosition.getZ() < 1000;
         boolean speedOk = this.speed < 160;
 
         return altitudeOk && speedOk;

@@ -22,7 +22,7 @@ public class ConsoleView {
                     f.getCallsign(),
                     f.getCurrentPosition().getX(),
                     f.getCurrentPosition().getY(),
-                    f.getAltitude(),
+                    f.getCurrentPosition().getZ(),
                     f.getHeading(),
                     f.getFuel(),
                     f.getStatus(),

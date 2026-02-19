@@ -119,7 +119,7 @@ public class WindowView {
                     f.getModel().getName(),
                     f.getModel().getCategory(),
                     f.getStatus(),
-                    f.getAltitude(),
+                    f.getCurrentPosition().getZ(),
                     f.getSpeed(),
                     f.getHeading(),
                     f.getFuel());

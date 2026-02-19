@@ -33,10 +33,10 @@ public class Main {
 
         // 4. Creamos un Vuelo real
         Position flightPos = new Position(-2.0, -0.6, 400);
-        Flight myFlight = new Flight("IBE1234", b737, flightPos, 72, 140, 400);
+        Flight myFlight = new Flight("IBE1234", b737, flightPos, 72, 140);
 
         Position flightPos2 = new Position(7.8, 1.45, 2000);
-        Flight myFlight2 = new Flight("RAY367", a320, flightPos2, 220, 220, 800);
+        Flight myFlight2 = new Flight("RAY367", a320, flightPos2, 220, 220);
 
         // 5. Creamos el GameController y añadimos el vuelo
         GameController controller = new GameController(alicante);
