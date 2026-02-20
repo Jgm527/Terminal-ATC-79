@@ -8,49 +8,40 @@ import javax.swing.*;
 
 public class Main {
     static void main() {
-        System.out.println("=== INICIALIZANDO SIMULADOR ATC-79 ===\n");
+        Airport alicante = createAlicanteAirport();
 
-        // 1. Creamos el Aeropuerto (Alicante)
+        Game game = new Game(alicante);
+
+        GameController controller = new GameController(game);
+
+        setupInitialFlights(game);
+
+        SwingUtilities.invokeLater(() -> {
+            WindowView view = new WindowView(controller);
+            controller.setView(view);
+            view.show();
+            controller.start();
+        });
+    }
+
+    private static Airport createAlicanteAirport() {
         Airport alicante = new Airport("LEAL", "Alicante-Elche", 2000);
 
-        // 2. Creamos las Pistas (Usando Posiciones)
         Position start10 = new Position(0, 0, 0);
         Position end10 = new Position(1.6, 0.5, 0);
-        Runway r10 = new Runway("10L", start10, end10);
-        alicante.addRunway(r10);
+        alicante.addRunway(new Runway("10", start10, end10));
 
-        Position start35 = new Position(1.6, 0.5, 0);
-        Position end35 = new Position(0, 0, 0);
-        Runway r35 = new Runway("35", start35, end35);
-        alicante.addRunway(r35);
+        Position start28 = new Position(1.6, 0.5, 0);
+        Position end28 = new Position(0, 0, 0);
+        alicante.addRunway(new Runway("28", start28, end28));
 
-        // 3. Creamos un Modelo de Avión (Boeing 737)
-        AircraftModel b737 = new AircraftModel("B737", "Boeing 737-800",
-                AircraftCategory.MEDIUM, 250, 2500.0, 26000, 15, 3, 3);
+        return alicante;
+    }
 
-        AircraftModel a320 = new AircraftModel("A320", "Airbus A320-400",
-                AircraftCategory.MEDIUM, 260, 2500.0, 28000, 16, 3, 3);
+    private static void setupInitialFlights(Game game) {
+        AircraftModel b737 = new AircraftModel("B737", "Boeing 737", AircraftCategory.MEDIUM, 250, 2500.0, 26000, 15, 3, 3);
 
-        // 4. Creamos un Vuelo real
-        Position flightPos = new Position(-2.0, -0.6, 400);
-        Flight myFlight = new Flight("IBE1234", b737, flightPos, 72, 140);
-
-        Position flightPos2 = new Position(7.8, 1.45, 2000);
-        Flight myFlight2 = new Flight("RAY367", a320, flightPos2, 220, 220);
-
-        // 5. Creamos el GameController y añadimos el vuelo
-        GameController controller = new GameController(alicante);
-        controller.addFlight(myFlight);
-        controller.addFlight(myFlight2);
-        controller.start();
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                WindowView radar = new WindowView(controller);
-                controller.setView(radar);
-                radar.show();
-            }
-        });
+        game.addFlight(new Flight("IBE1234", b737, new Position(-5.0, -2.0, 400), 72, 140));
+        game.addFlight(new Flight("VLG4455", b737, new Position(8.0, 4.0, 4000), 250, 220));
     }
 }

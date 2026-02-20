@@ -1,8 +1,4 @@
-package piano.atc79.logic;
-
-import piano.atc79.model.Airport;
-import piano.atc79.model.Flight;
-import piano.atc79.model.Runway;
+package piano.atc79.model;
 
 import java.util.List;
 
@@ -71,6 +67,7 @@ public class CommandParser {
         if (type.equals("VIS") || type.equals("ILS")) {
             f.setApproachType(type);
             f.setAssignedRunway(rw);
+            f.setStatus(FlightStatus.APPROACH);
         } else {
             throw new CommandExceptions("Tipo de aproximación no encontrada");
         }

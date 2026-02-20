@@ -16,6 +16,7 @@ public class WindowView {
     private JTextArea infoArea;
     private JTextArea errorLog;
     private JTextArea headerArea;
+    private RadarView radar;
 
     public WindowView(GameController gameController) {
         this.gameController = gameController;
@@ -27,7 +28,7 @@ public class WindowView {
         window.setLayout(new BorderLayout());
 
         // Añadir radar a la ventana
-        JPanel radar = new RadarView(gameController);
+        radar = new RadarView(gameController.getAirport(), gameController.getFlights());
         window.add(radar, BorderLayout.CENTER);
 
         // Añadir campo para comandos
@@ -128,6 +129,11 @@ public class WindowView {
         }
         infoArea.setForeground(Color.WHITE);
         infoArea.setText(stringSB.toString());
+    }
+
+    public void updateView(List<Flight> flights) {
+        updateFlightInfo(flights);
+        radar.updateData(flights);
     }
 
     public void show() {

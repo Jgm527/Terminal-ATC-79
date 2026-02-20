@@ -13,6 +13,7 @@ public class Flight {
     private int targetSpeed;
     private Runway assignedRunway;
     private String approachType;
+    private static final int MIN_VERTICAL_SEPARATION = 1000;
 
     public Flight(String callsign, AircraftModel model, Position currentPosition, int heading, int speed) {
         this.callsign = callsign;
@@ -107,6 +108,10 @@ public class Flight {
         this.approachType = approachType;
     }
 
+    public void setStatus(FlightStatus status) {
+        this.status = status;
+    }
+
     private double calculateFuel() {
         return model.getMaxFuel() * (0.7 + Math.random() * 0.3);
     }
@@ -182,10 +187,36 @@ public class Flight {
         setFuel(newFuel);
     }
 
-    public boolean isReadyToLand() {
+    public boolean checkLandingCondition() {
         boolean altitudeOk = currentPosition.getZ() < 1000;
         boolean speedOk = this.speed < 160;
+        boolean distanceOK = this.getCurrentPosition().distanceTo(assignedRunway.getStartPoint()) < 0.3;
 
-        return altitudeOk && speedOk;
+        return altitudeOk && speedOk && distanceOK;
+    }
+
+    public boolean areInConflict(Flight f) {
+        double horizontalDistance = this.getCurrentPosition().distanceTo(f.getCurrentPosition());
+        double verticalDistance = Math.abs(this.getCurrentPosition().getZ() - f.getCurrentPosition().getZ());
+        double minHorizontalSeparation = Math.max(this.getModel().getCategory().getMinSeparationNM(),
+                f.getModel().getCategory().getMinSeparationNM());
+
+        if (horizontalDistance < minHorizontalSeparation &&
+                verticalDistance < MIN_VERTICAL_SEPARATION) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isReadyToLand() {
+        if (this.assignedRunway != null && this.assignedRunway.isAligned(this) && this.checkLandingCondition()) {
+            return true;
+        }
+        return false;
+    }
+
+    public void land() {
+        this.setTargetSpeed(0);
+        this.setTargetAltitude(0);
     }
 }

@@ -1,26 +1,32 @@
 package piano.atc79.view;
 
-import piano.atc79.controller.GameController;
+import piano.atc79.model.Airport;
 import piano.atc79.model.Flight;
 import piano.atc79.model.Position;
 import piano.atc79.model.Runway;
+
+import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class RadarView extends JPanel {
-    private GameController gameController;
+    private Airport airport; // Recibe el modelo directamente, no el controller
+    private List<Flight> flights;
     private static final int SCALE = 20;
     private static final int CENTER_X = 400;// Offset to center 0,0
     private static final int CENTER_Y = 600;
 
-    public RadarView(GameController gameController) {
-        this.gameController = gameController;
-        setBackground(Color.black); // ya puedo dibujar lo q sea :D
+    public RadarView(Airport airport, List<Flight> flights) {
+        this.airport = airport;
+        this.flights = flights;
+        setBackground(Color.black);
+    }
 
-        Timer repaintTimer = new Timer(100, e -> repaint());
-        repaintTimer.start();
+    public void updateData(List<Flight> newFlights) {
+        this.flights = newFlights;
+        repaint();
     }
 
     @Override
@@ -46,7 +52,7 @@ public class RadarView extends JPanel {
         // Dibujar pistas
         g2d.setColor(Color.WHITE);
         g2d.setStroke(new BasicStroke(4.0f));
-        for (Runway r : gameController.getAirport().getRunways()) {
+        for (Runway r : this.airport.getRunways()) {
             int x1 = centerX + (int)(r.getStartPoint().getX() * SCALE);
             int y1 = centerY - (int)(r.getStartPoint().getY() * SCALE);
             int x2 = centerX + (int)(r.getEndPoint().getX() * SCALE);
@@ -60,7 +66,7 @@ public class RadarView extends JPanel {
         g2d.setStroke(new BasicStroke(1.0f));
 
 
-        for (Flight f : gameController.getFlights()) {
+        for (Flight f : this.flights) {
             drawFlight(g2d, f);
         }
     }

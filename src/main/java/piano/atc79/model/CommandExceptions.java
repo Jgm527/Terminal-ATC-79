@@ -1,4 +1,4 @@
-package piano.atc79.logic;
+package piano.atc79.model;
 
 public class CommandExceptions extends Exception {
     public CommandExceptions(String message) {
