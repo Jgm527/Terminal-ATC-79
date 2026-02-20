@@ -9,7 +9,6 @@ import piano.atc79.view.WindowView;
 import java.util.List;
 
 import javax.swing.*;
-import java.awt.*;
 
 
 public class GameController {
@@ -29,8 +28,14 @@ public class GameController {
         gameTimer = new Timer(1000, e -> {
             if (!game.isGameOver()) {
                 game.update();
+
+                for (String event : game.pullEvents()) {
+                    view.logTypedMessage(event, "INFO");
+                }
+
                 view.updateView(game.getFlights());
             } else {
+                view.logTypedMessage("OPERACIONES SUSPENDIDAS - GAME OVER", "SYSTEM");
                 gameTimer.stop();
             }
         });
@@ -39,9 +44,10 @@ public class GameController {
 
     public void executeCommand(String command) {
         try {
-            game.executeCommand(command);
+            String feedback = game.executeCommand(command);
+            view.logTypedMessage(feedback, "SUCCESS");
         } catch (CommandExceptions e) {
-            view.logMessage(e.getMessage(), Color.RED);
+            view.logTypedMessage(e.getMessage(), "ERROR");
         }
     }
 

@@ -3,7 +3,7 @@ package piano.atc79.model;
 import java.util.List;
 
 public class CommandParser {
-    public void parse(String input, List<Flight> flights, Airport airport) throws CommandExceptions {
+    public String parse(String input, List<Flight> flights, Airport airport, Game game) throws CommandExceptions {
         String[] commands = input.trim().split( "\\s");
 
         if (commands.length < 2) {
@@ -14,7 +14,8 @@ public class CommandParser {
         Flight flight = findFlight(callsign, flights);
 
         String action = commands[1].toUpperCase();
-        processAction(action, commands, flight, airport);
+        return processAction(action, commands, flight, airport, game);
+
     }
 
     private Flight findFlight(String callsign, List<Flight> flights) throws CommandExceptions {
@@ -26,16 +27,14 @@ public class CommandParser {
         throw new CommandExceptions("Vuelo " + callsign + " no identificado.");
     }
 
-    private void processAction(String action, String[] commands, Flight flight, Airport airport)
+    private String processAction(String action, String[] commands, Flight flight, Airport airport, Game game)
             throws CommandExceptions {
         try {
             switch (action) {
                 case "H", "A", "S":
-                    handleBasicMovement(action, commands[2], flight);
-                    break;
+                    return handleBasicMovement(action, commands[2], flight, game);
                 case "CLR":
-                    handleClearance(commands, flight, airport);
-                    break;
+                    return handleClearance(commands, flight, airport, game);
                 default:
                     throw new CommandExceptions("Acción desconocida:" + action);
             }
@@ -46,17 +45,29 @@ public class CommandParser {
         }
     }
 
-    private void handleBasicMovement(String action, String valueStr, Flight f) throws CommandExceptions {
+    private String handleBasicMovement(String action, String valueStr, Flight f, Game game) throws CommandExceptions {
         int val = Integer.parseInt(valueStr);
+        String msg = "";
         switch (action) {
-            case "H" -> f.setTargetHeading(val);
-            case "A" -> f.setTargetAltitude(val);
-            case "S" -> f.setTargetSpeed(val);
+            case "H" -> {
+                f.setTargetHeading(val);
+                msg = String.format(game.getTemplate("CMD_H"), f.getCallsign(), val);
+            }
+            case "A" -> {
+                f.setTargetAltitude(val);
+                msg = String.format(game.getTemplate("CMD_A"), f.getCallsign(), val);
+            }
+            case "S" -> {
+                f.setTargetSpeed(val);
+                msg = String.format(game.getTemplate("CMD_S"), f.getCallsign(), val);
+            }
         }
+        return msg;
     }
 
-    private void handleClearance(String[] parts, Flight f, Airport airport) throws CommandExceptions {
+    private String handleClearance(String[] parts, Flight f, Airport airport, Game game) throws CommandExceptions {
         if (parts.length < 4) throw new CommandExceptions("Uso: CLR [TIPO] [PISTA]");
+
 
         String type = parts[2].toUpperCase();
         String runwayId = parts[3].toUpperCase();
@@ -68,6 +79,7 @@ public class CommandParser {
             f.setApproachType(type);
             f.setAssignedRunway(rw);
             f.setStatus(FlightStatus.APPROACH);
+            return String.format(game.getTemplate("CMD_CLR"), f.getCallsign(), type, runwayId);
         } else {
             throw new CommandExceptions("Tipo de aproximación no encontrada");
         }

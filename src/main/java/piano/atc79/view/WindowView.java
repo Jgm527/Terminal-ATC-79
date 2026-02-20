@@ -5,10 +5,12 @@ import piano.atc79.model.Airport;
 import piano.atc79.model.Flight;
 import piano.atc79.model.Runway;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 public class WindowView {
     private JFrame window;
@@ -17,6 +19,7 @@ public class WindowView {
     private JTextArea errorLog;
     private JTextArea headerArea;
     private RadarView radar;
+    private Map<String, Color> messageColors;
 
     public WindowView(GameController gameController) {
         this.gameController = gameController;
@@ -92,6 +95,17 @@ public class WindowView {
         headerArea.setText(getHeaderStringSB());
 
         window.add(headerArea, BorderLayout.NORTH);
+
+        initColorMap();
+    }
+
+    private void initColorMap() {
+        messageColors = new HashMap<>();
+        messageColors.put("ERROR", Color.RED);
+        messageColors.put("SUCCESS", Color.GREEN);
+        messageColors.put("INFO", Color.CYAN);
+        messageColors.put("WARN", Color.YELLOW);
+        messageColors.put("SYSTEM", Color.ORANGE);
     }
 
     private String getHeaderStringSB() {
@@ -110,6 +124,11 @@ public class WindowView {
         errorLog.append(message + "\n");
 
         errorLog.setCaretPosition(errorLog.getDocument().getLength());
+    }
+
+    public void logTypedMessage(String message, String type) {
+        Color color = messageColors.getOrDefault(type.toUpperCase(), Color.WHITE);
+        logMessage(message, color);
     }
 
     public void updateFlightInfo(List<Flight> flights) {
