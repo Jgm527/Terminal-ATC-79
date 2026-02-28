@@ -29,11 +29,11 @@ public class Main {
 
         Position start10 = new Position(0, 0, 0);
         Position end10 = new Position(1.6, 0.5, 0);
-        alicante.addRunway(new Runway("10", start10, end10));
+        alicante.addRunway(new Runway("10", start10, end10, true));
 
         Position start28 = new Position(1.6, 0.5, 0);
         Position end28 = new Position(0, 0, 0);
-        alicante.addRunway(new Runway("28", start28, end28));
+        alicante.addRunway(new Runway("28", start28, end28, true));
 
         return alicante;
     }

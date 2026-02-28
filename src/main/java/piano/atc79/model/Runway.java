@@ -5,11 +5,13 @@ public class Runway {
     private Position startPoint;
     private Position endPoint;
     private boolean isOccupied;
+    private boolean hasILS;
 
-    public Runway(String id, Position startPoint, Position endPoint) {
+    public Runway(String id, Position startPoint, Position endPoint, boolean hasILS) {
         this.id = id;
         this.startPoint = startPoint;
         this.endPoint = endPoint;
+        this.hasILS = hasILS;
         isOccupied = false;
     }
 
@@ -23,6 +25,10 @@ public class Runway {
 
     public Position getEndPoint() {
         return endPoint;
+    }
+
+    public boolean hasILS() {
+        return hasILS;
     }
 
     public boolean isOccupied() {
