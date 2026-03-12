@@ -3,7 +3,8 @@ package piano.atc79.model;
 public enum FlightStatus {
     EN_ROUTE(true),
     HOLDING(true),
-    APPROACH(true),
+    ILS_APPROACH(true),
+    VIS_APPROACH(true),
     LANDING(false),
     EMERGENCY(true),
     CRASHED(false);

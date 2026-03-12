@@ -33,15 +33,15 @@ public class Main {
 
         Position start28 = new Position(1.6, 0.5, 0);
         Position end28 = new Position(0, 0, 0);
-        alicante.addRunway(new Runway("28", start28, end28, true));
+        alicante.addRunway(new Runway("28", start28, end28, false));
 
         return alicante;
     }
 
     private static void setupInitialFlights(Game game) {
-        AircraftModel b737 = new AircraftModel("B737", "Boeing 737", AircraftCategory.MEDIUM, 250, 2500.0, 26000, 15, 3, 3);
+        AircraftModel b737 = new AircraftModel("B737", "Boeing 737", AircraftCategory.MEDIUM, 250, 120, 2500.0, 26000, 15, 3, 3);
 
-        game.addFlight(new Flight("IBE1234", b737, new Position(-5.0, -2.0, 400), 72, 140));
+        game.addFlight(new Flight("IBE1234", b737, new Position(-5.0, -1.9, 1000), 72, 140));
         game.addFlight(new Flight("VLG4455", b737, new Position(8.0, 4.0, 4000), 250, 220));
     }
 }

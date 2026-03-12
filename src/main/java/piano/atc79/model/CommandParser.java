@@ -75,11 +75,16 @@ public class CommandParser {
 
         if (rw == null) throw new CommandExceptions("Pista " + runwayId + " no encontrada.");
 
-        if (type.equals("VIS") || type.equals("ILS")) {
+        if (type.equals("VIS")) {
             f.setApproachType(type);
             f.setAssignedRunway(rw);
-            f.setStatus(FlightStatus.APPROACH);
-            return String.format(game.getTemplate("CMD_CLR"), f.getCallsign(), type, runwayId);
+            f.setStatus(FlightStatus.VIS_APPROACH);
+            return String.format(game.getTemplate("CMD_CLRVIS"), f.getCallsign(), type, runwayId);
+        } else if (type.equals("ILS")) {
+            f.setApproachType(type);
+            f.setAssignedRunway(rw);
+            f.setStatus(FlightStatus.ILS_APPROACH);
+            return String.format(game.getTemplate("CMD_CLRILS"), f.getCallsign(), type, runwayId);
         } else {
             throw new CommandExceptions("Tipo de aproximación no encontrada");
         }

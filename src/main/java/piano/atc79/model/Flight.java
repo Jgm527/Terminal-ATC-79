@@ -72,6 +72,10 @@ public class Flight {
         return assignedRunway;
     }
 
+    public String getApproachType() {
+        return approachType;
+    }
+
     private void setHeading(int heading) {
         this.heading = heading;
     }
@@ -117,6 +121,10 @@ public class Flight {
     }
 
     public void updatePosition() {
+        if (this.status == FlightStatus.LANDING && assignedRunway != null) {
+            landLogic();
+        }
+
         updateHeading();
         updateLatitude();
         updateAltitude();
@@ -138,6 +146,13 @@ public class Flight {
     private void updateAltitude() {
         int current = currentPosition.getZ();
         int target = getTargetAltitude();
+
+        // NUEVA LÓGICA DE SEGURIDAD
+        if (this.status == FlightStatus.LANDING) {
+            // En aterrizaje, nunca permitimos que el avión suba por encima del target
+            // Y aseguramos que el target nunca sea mayor a la altura actual para evitar el "rebote"
+            target = Math.min(current, target);
+        }
 
         if (current < target) {
             setAltitude(Math.min(current + getModel().getClimbRate(), target));
@@ -187,12 +202,81 @@ public class Flight {
         setFuel(newFuel);
     }
 
+    public boolean isReadyToLand() {
+        if (this.assignedRunway == null) return false;
+
+        double dist = this.getCurrentPosition().distanceTo(assignedRunway.getStartPoint());
+        boolean alineado = assignedRunway.isAligned(this);
+
+        // Si es ILS, se activa a las 12 millas si está alineado
+        if ("ILS".equals(approachType) && dist < 12.0 && alineado) return true;
+
+        // Si es Visual, se activa a las 6 millas si está alineado y a altura de vectorización (ej. 3000)
+        if ("VIS".equals(approachType) && dist < 6.0 && alineado && currentPosition.getZ() <= 3000) return true;
+
+        return false;
+    }
+
     public boolean checkLandingCondition() {
         boolean altitudeOk = currentPosition.getZ() < 1000;
         boolean speedOk = this.speed < 160;
         boolean distanceOK = this.getCurrentPosition().distanceTo(assignedRunway.getStartPoint()) < 0.3;
+        boolean approachOK = this.getApproachType().equals("ILS") && assignedRunway.hasILS() || this.getApproachType().equals("VIS");
 
-        return altitudeOk && speedOk && distanceOK;
+        return altitudeOk && speedOk && distanceOK && approachOK;
+    }
+
+    private void landLogic() {
+        if (assignedRunway == null) return;
+
+        double distInicio = currentPosition.distanceTo(assignedRunway.getStartPoint());
+
+        // 1. Si ya estamos en pista, forzamos aterrizaje y detenemos lógica
+        if (distInicio < 0.1 || currentPosition.getZ() < 10) {
+            this.targetAltitude = 0;
+            this.targetSpeed = 0;
+            return;
+        }
+
+        int altitudSenda = (int) (distInicio * 300);
+
+        // 2. Ejecutar lógica según tipo
+        if ("ILS".equals(approachType)) {
+            approachILS(distInicio, altitudSenda);
+        } else if ("VIS".equals(approachType)) {
+            approachVIS(distInicio, altitudSenda);
+        } else {
+            // Fallback: Si no tiene tipo, forzar descenso suave
+            this.targetAltitude = Math.min(this.targetAltitude, altitudSenda);
+        }
+    }
+
+    private void approachILS(double dist, int altSenda) {
+        // Solo verifica alineación, no verifiques la altura actual
+        if (dist < 12.0 && assignedRunway.isAligned(this)) {
+            // Asigna la senda directamente. El avión bajará (o subirá nivelado)
+            // para alcanzarla, tal como dicta la física de updateAltitude.
+            this.targetAltitude = altSenda;
+            this.targetSpeed = calculateApproachVelocity(dist);
+        }
+    }
+
+    private void approachVIS(double dist, int altSenda) {
+        // Si está alineado y en rango visual, engancha la senda
+        if (dist < 6.0 && assignedRunway.isAligned(this)) {
+            this.targetAltitude = altSenda;
+            this.targetSpeed = calculateApproachVelocity(dist);
+        }
+    }
+
+    private int calculateApproachVelocity(double dist) {
+        if (dist < 0.05) return 0;
+
+        if (dist < 1.0) return model.getMinSpeed();
+
+        if (dist < 4.0) return model.getMinSpeed() + 20;
+
+        return model.getMinSpeed() + 50;
     }
 
     public boolean areInConflict(Flight f) {
@@ -208,15 +292,4 @@ public class Flight {
         return false;
     }
 
-    public boolean isReadyToLand() {
-        if (this.assignedRunway != null && this.assignedRunway.isAligned(this) && this.checkLandingCondition()) {
-            return true;
-        }
-        return false;
-    }
-
-    public void land() {
-        this.setTargetSpeed(0);
-        this.setTargetAltitude(0);
-    }
 }

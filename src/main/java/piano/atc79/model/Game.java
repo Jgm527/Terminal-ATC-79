@@ -30,7 +30,8 @@ public class Game {
         radioTemplates.put("CMD_H", "%s giró a rumbo %d");
         radioTemplates.put("CMD_A", "%s se mantendrá un nivel de %d pies");
         radioTemplates.put("CMD_S", "%s cambió su velocidad a %d nudos");
-        radioTemplates.put("CMD_CLR", "%s, autorizado a aproximación %s pista %s");
+        radioTemplates.put("CMD_CLRVIS", "%s, autorizado a aproximación VISUAL en la pista %s");
+        radioTemplates.put("CMD_CLRILS", "%s, autorizado a aproximación ILS en la pista %s");
 
         radioTemplates.put("EVT_LANDED", ">>> %s ha aterrizado con éxito");
         radioTemplates.put("EVT_TCAS", "TCAS: Alerta de proximidad entre %s y %s.");
@@ -59,18 +60,17 @@ public class Game {
             f.updateFuel();
 
             if (f.getStatus().equals(FlightStatus.LANDING)) {
-                if (f.getCurrentPosition().distanceTo(f.getAssignedRunway().getStartPoint()) < 0.3) {
-                    f.land();
-                }
-                if (f.getSpeed() <= 0) {
+                if (f.getSpeed() <= 0 && f.getCurrentPosition().getZ() <= 5) {
                     addEvent("EVT_LANDED", f.getCallsign());
                     flights.remove(i);
                     continue;
                 }
             }
-            else if (f.isReadyToLand()) {
+
+            if (f.getApproachType() != null && f.isReadyToLand()) {
                 f.setStatus(FlightStatus.LANDING);
             }
+
             if (f.getFuel() < 20) {
                 if (Math.random() < 0.05) {
                     addEvent("EVT_FUEL", f.getCallsign());
