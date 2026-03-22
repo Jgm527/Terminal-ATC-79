@@ -147,10 +147,7 @@ public class Flight {
         int current = currentPosition.getZ();
         int target = getTargetAltitude();
 
-        // NUEVA LÓGICA DE SEGURIDAD
         if (this.status == FlightStatus.LANDING) {
-            // En aterrizaje, nunca permitimos que el avión suba por encima del target
-            // Y aseguramos que el target nunca sea mayor a la altura actual para evitar el "rebote"
             target = Math.min(current, target);
         }
 
@@ -208,10 +205,12 @@ public class Flight {
         double dist = this.getCurrentPosition().distanceTo(assignedRunway.getStartPoint());
         boolean alineado = assignedRunway.isAligned(this);
 
-        // Si es ILS, se activa a las 12 millas si está alineado
+        // TODO Arreglar la altura (calcular curva VIS/ILS)
         if ("ILS".equals(approachType) && dist < 12.0 && alineado) return true;
 
-        // Si es Visual, se activa a las 6 millas si está alineado y a altura de vectorización (ej. 3000)
+        // TODO Arreglar la altura (calcular curva VIS/ILS)
+        // si se calcula la curva hay que revisar si engancha o no, y si no engancha mostrarlo, y si engancha se evita el
+        //rebote porque ya tiene un Path asignado
         if ("VIS".equals(approachType) && dist < 6.0 && alineado && currentPosition.getZ() <= 3000) return true;
 
         return false;
@@ -280,6 +279,7 @@ public class Flight {
     }
 
     public boolean areInConflict(Flight f) {
+        //TODO Arreglar conflictos frontales (No se debe tener en cuenta el wakeIntensity (min separation)
         double horizontalDistance = this.getCurrentPosition().distanceTo(f.getCurrentPosition());
         double verticalDistance = Math.abs(this.getCurrentPosition().getZ() - f.getCurrentPosition().getZ());
         double minHorizontalSeparation = Math.max(this.getModel().getCategory().getMinSeparationNM(),

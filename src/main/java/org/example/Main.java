@@ -42,6 +42,6 @@ public class Main {
         AircraftModel b737 = new AircraftModel("B737", "Boeing 737", AircraftCategory.MEDIUM, 250, 120, 2500.0, 26000, 15, 3, 3);
 
         game.addFlight(new Flight("IBE1234", b737, new Position(-5.0, -1.9, 1000), 72, 140));
-        game.addFlight(new Flight("VLG4455", b737, new Position(8.0, 4.0, 4000), 250, 220));
+        game.addFlight(new Flight("VLG4455", b737, new Position(4.0, 1.3, 2000), 252, 220));
     }
 }

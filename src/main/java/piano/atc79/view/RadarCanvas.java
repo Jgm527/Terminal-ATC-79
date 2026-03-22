@@ -5,70 +5,66 @@ import piano.atc79.model.Flight;
 import piano.atc79.model.Position;
 import piano.atc79.model.Runway;
 
-import java.util.List;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.util.List;
 
-public class RadarView extends JPanel {
-    private Airport airport; // Recibe el modelo directamente, no el controller
+public class RadarCanvas extends JPanel {
+    private Airport airport;
     private List<Flight> flights;
     private static final int SCALE = 20;
-    private int centerX;
-    private int centerY;
 
-    public RadarView(Airport airport, List<Flight> flights) {
+    public RadarCanvas(Airport airport, List<Flight> flights) {
         this.airport = airport;
         this.flights = flights;
-        setBackground(Color.black);
+        this.setBackground(Color.BLACK);
     }
 
-    public void updateData(List<Flight> newFlights) {
-        this.flights = newFlights;
-        repaint();
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Convertimos el pincel básico a Graphics2D para tener más funciones
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Dibujar detallitos del radar
-        centerX = getWidth() / 2;
-        centerY = getHeight() / 2;
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+
+        // Dibujar círculos de rango
         g2d.setColor(new Color(0, 50, 0));
         g2d.drawLine(centerX, 0, centerX, getHeight());
         g2d.drawLine(0, centerY, getWidth(), centerY);
         for (int i = 1; i <= 5; i++) {
             int radio = i * 100;
-
             g2d.drawOval(centerX - radio, centerY - radio, radio * 2, radio * 2);
         }
 
         // Dibujar pistas
-        for (Runway r : this.airport.getRunways()) {
-            drawRunway(g2d, r);
+        for (Runway r : airport.getRunways()) {
+            drawRunway(g2d, r, centerX, centerY);
         }
 
-        for (Flight f : this.flights) {
-            drawFlight(g2d, f);
+        // Dibujar vuelos
+        if (flights != null) {
+            for (Flight f : flights) {
+                drawFlight(g2d, f);
+            }
         }
     }
 
-    private void drawRunway(Graphics2D g2d, Runway r){
-        // DIbujar pista
+    private void drawRunway(Graphics2D g2d, Runway r, int centerX, int centerY) {
         g2d.setColor(Color.WHITE);
         g2d.setStroke(new BasicStroke(4.0f));
-        int x1 = centerX + (int)(r.getStartPoint().getX() * SCALE);
-        int y1 = centerY - (int)(r.getStartPoint().getY() * SCALE);
-        int x2 = centerX + (int)(r.getEndPoint().getX() * SCALE);
-        int y2 = centerY - (int)(r.getEndPoint().getY() * SCALE);
+        int x1 = centerX + (int) (r.getStartPoint().getX() * SCALE);
+        int y1 = centerY - (int) (r.getStartPoint().getY() * SCALE);
+        int x2 = centerX + (int) (r.getEndPoint().getX() * SCALE);
+        int y2 = centerY - (int) (r.getEndPoint().getY() * SCALE);
         g2d.drawLine(x1, y1, x2, y2);
 
-        // Dibujar vector ILS si tiene
         if (r.hasILS()) {
             g2d.setColor(new Color(112, 41, 99));
             g2d.setStroke(new BasicStroke(1.0f));
@@ -97,13 +93,9 @@ public class RadarView extends JPanel {
 
                 g2d.drawLine(x1, y1, screenEndX, screenEndY);
             }
-            g2d.setColor(Color.WHITE);
         }
-
-        // Dibujar datos pista
-        int x = centerX + (int)(r.getStartPoint().getX() * SCALE);
-        int y = centerY - (int)(r.getStartPoint().getY() * SCALE);
-        g2d.drawString(r.getId(), x, y + 15);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString(r.getId(), x1, y1 + 15);
     }
 
     private void drawFlight(Graphics2D g2d, Flight f) {
@@ -133,7 +125,6 @@ public class RadarView extends JPanel {
         g2d.drawString("Spd: " + f.getSpeed(), flightPosition.x + 10, flightPosition.y + 24);
     }
 
-    // relacionar coordenadas con la escala y posicion en el radar
     private Point toScreen(Position pos) {
         int x = (int) (pos.getX() * SCALE) + getWidth() / 2;
         int y = getHeight() / 2 - (int) (pos.getY() * SCALE);

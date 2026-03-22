@@ -30,12 +30,12 @@ public class GameController {
                 game.update();
 
                 for (String event : game.pullEvents()) {
-                    view.logTypedMessage(event, "INFO");
+                    view.getRadar().logTypedMessage(event, "INFO");
                 }
 
                 view.updateView(game.getFlights());
             } else {
-                view.logTypedMessage("OPERACIONES SUSPENDIDAS - GAME OVER", "SYSTEM");
+                view.getRadar().logTypedMessage("OPERACIONES SUSPENDIDAS - GAME OVER", "SYSTEM");
                 gameTimer.stop();
             }
         });
@@ -45,9 +45,9 @@ public class GameController {
     public void executeCommand(String command) {
         try {
             String feedback = game.executeCommand(command);
-            view.logTypedMessage(feedback, "SUCCESS");
+            view.getRadar().logTypedMessage(feedback, "SUCCESS");
         } catch (CommandExceptions e) {
-            view.logTypedMessage(e.getMessage(), "ERROR");
+            view.getRadar().logTypedMessage(e.getMessage(), "ERROR");
         }
     }
 
