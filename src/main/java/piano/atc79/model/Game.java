@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Modelo lógico principal del juego. Administra el estado del aeropuerto, los vuelos,
+ * la puntuación, los eventos del juego, y comprueba las condiciones de victoria o derrota.
+ */
 public class Game {
     private String player;
     private Airport airport;
@@ -15,6 +19,12 @@ public class Game {
     private Map<String, String> radioTemplates;
     private List<String> eventLog;
 
+    /**
+     * Construye un nuevo Juego (Game) con un aeropuerto especificado.
+     * Inicializa componentes como la puntuación y el analizador de comandos.
+     * 
+     * @param airport el {@link Airport} que se utilizará en el juego
+     */
     public Game(Airport airport) {
         this.airport = airport;
         this.flights = new ArrayList<>();
@@ -53,6 +63,10 @@ public class Game {
         return currentEvents;
     }
 
+    /**
+     * Actualiza el estado del juego para cada ciclo. Mueve los vuelos, consume combustible,
+     * evalúa condiciones de aterrizaje y genera alertas si es necesario.
+     */
     public void update() {
         for (int i = flights.size() - 1; i >= 0; i--) {
             Flight f = flights.get(i);
@@ -80,6 +94,11 @@ public class Game {
         checkGameOver();
     }
 
+    /**
+     * Comprueba si se ha cumplido alguna condición de fin de partida, como
+     * por ejemplo una colisión de aeronaves o agotamiento del combustible.
+     * Activa el indicador "gameOver" si es cierto.
+     */
     public void checkGameOver() {
         // Buscar aviones sin combustible
         for (int i = flights.size() - 1; i >= 0; i--) {
@@ -102,6 +121,13 @@ public class Game {
         }
     }
 
+    /**
+     * Ejecuta un comando de texto pasándolo al analizador de comandos.
+     * 
+     * @param command la cadena de comando introducida por el usuario
+     * @return el mensaje de respuesta resultante de ejecutar el comando
+     * @throws CommandExceptions si el análisis o la ejecución fallan
+     */
     public String executeCommand(String command) throws CommandExceptions {
         return commandParser.parse(command, this.flights, this.airport, this);
     }

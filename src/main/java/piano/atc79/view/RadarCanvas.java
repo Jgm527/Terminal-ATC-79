@@ -10,11 +10,21 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 
+/**
+ * Componente gráfico encargado de dibujar la representación visual en base de radar.
+ * Dibuja las pistas del aeropuerto, los vuelos activos y los anillos de rango de separación visual.
+ */
 public class RadarCanvas extends JPanel {
     private Airport airport;
     private List<Flight> flights;
     private static final int SCALE = 20;
 
+    /**
+     * Construye el lienzo del radar interactivo.
+     * 
+     * @param airport la información del aeropuerto para dibujar sus pistas de aterrizaje
+     * @param flights la lista actualizada inicial de vuelos a trazar
+     */
     public RadarCanvas(Airport airport, List<Flight> flights) {
         this.airport = airport;
         this.flights = flights;
@@ -25,6 +35,12 @@ public class RadarCanvas extends JPanel {
         this.flights = flights;
     }
 
+    /**
+     * Sobrescribe el método paintComponent para manejar la lógica de repintado del radar,
+     * dibujando en su lugar anillos de rango, modelos de las pistas de aterrizaje y las trazas.
+     * 
+     * @param g el contexto interactivo de Java 2D {@link Graphics} donde pintar
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

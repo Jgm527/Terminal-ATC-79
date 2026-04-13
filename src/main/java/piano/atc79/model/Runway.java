@@ -1,5 +1,8 @@
 package piano.atc79.model;
 
+/**
+ * Representa una pista en un aeropuerto con sus coordenadas de inicio y fin.
+ */
 public class Runway {
     private String id;
     private Position startPoint;
@@ -7,6 +10,14 @@ public class Runway {
     private boolean isOccupied;
     private boolean hasILS;
 
+    /**
+     * Construye una nueva pista de aterrizaje (Runway).
+     * 
+     * @param id identificador de la pista (ej. "10", "28R")
+     * @param startPoint la {@link Position} de inicio
+     * @param endPoint la {@link Position} de finalización
+     * @param hasILS indica si la pista tiene Sistema Instrumental de Aterrizaje
+     */
     public Runway(String id, Position startPoint, Position endPoint, boolean hasILS) {
         this.id = id;
         this.startPoint = startPoint;
@@ -53,6 +64,12 @@ public class Runway {
         return (int) (degrees + 360) % 360;
     }
 
+    /**
+     * Comprueba si un vuelo está alineado correctamente con la pista para la aproximación.
+     * 
+     * @param flight el {@link Flight} a verificar
+     * @return true si el vuelo está alineado y en rango, false en caso contrario
+     */
     public boolean isAligned(Flight flight) {
         double distance = flight.getCurrentPosition().distanceTo(this.startPoint);
 

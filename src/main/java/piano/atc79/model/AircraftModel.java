@@ -1,5 +1,8 @@
 package piano.atc79.model;
 
+/**
+ * Representa las especificaciones y características de rendimiento de un modelo específico de aeronave.
+ */
 public class AircraftModel {
     private String id;
     private String name;
@@ -12,6 +15,20 @@ public class AircraftModel {
     private final int turningRate;
     private final int speedingRate;
 
+    /**
+     * Construye un nuevo AircraftModel con sus características físicas y de rendimiento.
+     * 
+     * @param id identificador único en formato texto que representa el modelo
+     * @param name el nombre legible de la aeronave
+     * @param category la {@link AircraftCategory} que determina los requerimientos de separación
+     * @param cruiseSpeed velocidad de vuelo normal en nudos
+     * @param minSpeed velocidad mínima de maniobra o pérdida en nudos
+     * @param fuelConsumption tasa de combustible consumido por hora
+     * @param maxFuel capacidad total de combustible
+     * @param climbRate velocidad vertical en pies por minuto
+     * @param turningRate capacidad de giro en grados por el intervalo de actualización
+     * @param speedingRate capacidad de aceleración y desaceleración
+     */
     public AircraftModel(String id, String name, AircraftCategory category, int cruiseSpeed, int minSpeed, double fuelConsumption,
                          double maxFuel, int climbRate, int turningRate, int speedingRate) {
         this.id = id;

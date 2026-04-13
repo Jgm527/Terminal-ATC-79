@@ -6,7 +6,23 @@ import piano.atc79.view.*;
 
 import javax.swing.*;
 
+/**
+ * Punto de entrada principal para la aplicación Terminal ATC 79.
+ * Inicializa los componentes de la arquitectura MVC y comienza el juego.
+ * 
+ * <p>Ejemplo de uso:</p>
+ * <pre>
+ *   {@code
+ *   // Automáticamente ejecutado al iniciar el programa
+ *   Main.main();
+ *   }
+ * </pre>
+ */
 public class Main {
+    /**
+     * Inicializa la aplicación, crea los componentes del aeropuerto y del juego,
+     * y muestra la vista principal de la ventana.
+     */
     static void main() {
         Airport alicante = createAlicanteAirport();
 
@@ -24,6 +40,11 @@ public class Main {
         });
     }
 
+    /**
+     * Crea y configura el aeropuerto de Alicante con sus pistas correspondientes.
+     * 
+     * @return el objeto {@link Airport} completamente configurado para Alicante
+     */
     private static Airport createAlicanteAirport() {
         Airport alicante = new Airport("LEAL", "Alicante-Elche", 2000);
 
@@ -38,6 +59,11 @@ public class Main {
         return alicante;
     }
 
+    /**
+     * Prepara los vuelos iniciales en el juego para pruebas o el escenario de inicio.
+     * 
+     * @param game la instancia de {@link Game} donde se añadirán los vuelos
+     */
     private static void setupInitialFlights(Game game) {
         AircraftModel b737 = new AircraftModel("B737", "Boeing 737", AircraftCategory.MEDIUM, 250, 120, 2500.0, 26000, 15, 3, 3);
 

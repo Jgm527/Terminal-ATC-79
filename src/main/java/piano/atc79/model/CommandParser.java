@@ -2,7 +2,27 @@ package piano.atc79.model;
 
 import java.util.List;
 
+/**
+ * Analiza los comandos de texto del usuario y aplica las acciones correspondientes 
+ * a los vuelos en el juego.
+ * 
+ * <p>Ejemplos de comandos manejados:</p>
+ * <ul>
+ *   <li>{@code IBE1234 H 250} - Cambiar el rumbo del vuelo a 250 grados</li>
+ *   <li>{@code IBE1234 CLR ILS 10} - Autorizar aterrizaje instrumental en pista 10</li>
+ * </ul>
+ */
 public class CommandParser {
+    /**
+     * Analiza el texto introducido y aplica la lógica de comando a los vuelos especificados.
+     * 
+     * @param input el comando de texto introducido por el usuario
+     * @param flights la lista de vuelos activos en el juego
+     * @param airport el aeropuerto donde podrían tener lugar las acciones
+     * @param game el modelo del juego que maneja el estado global
+     * @return un mensaje describiendo el resultado de la ejecución del comando
+     * @throws CommandExceptions si el comando está mal formado o es inválido
+     */
     public String parse(String input, List<Flight> flights, Airport airport, Game game) throws CommandExceptions {
         String[] commands = input.trim().split( "\\s");
 

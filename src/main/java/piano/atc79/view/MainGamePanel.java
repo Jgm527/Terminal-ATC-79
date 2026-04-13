@@ -10,6 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * El panel de la interfaz gráfica principal que contiene el diseño del radar,
+ * las áreas de salida de texto de información y el campo de entrada de comandos.
+ */
 public class MainGamePanel extends JPanel {
     private RadarCanvas canvas;
     private JTextArea headerArea;
@@ -19,6 +23,12 @@ public class MainGamePanel extends JPanel {
     private Map<String, Color> messageColors;
     private Airport airport;
 
+    /**
+     * Construye la estructura y diseño del panel principal del juego.
+     * 
+     * @param airport el {@link Airport} que se va a representar y mostrar
+     * @param flights la lista actualizada de los {@link Flight}s (vuelos) activos
+     */
     public MainGamePanel(Airport airport, List<Flight> flights) {
         this.airport = airport;
         this.setLayout(new BorderLayout());
@@ -83,6 +93,11 @@ public class MainGamePanel extends JPanel {
         return area;
     }
 
+    /**
+     * Actualiza los datos de los vuelos representados en el radar del panel derecho.
+     * 
+     * @param newFlights la lista actualizada de vuelos
+     */
     public void updateData(List<Flight> newFlights) {
         canvas.setFlights(newFlights);
         canvas.repaint(); // Redibuja el radar
@@ -115,6 +130,12 @@ public class MainGamePanel extends JPanel {
         messageColors.put("INFO", Color.CYAN);
     }
 
+    /**
+     * Escribe un texto en el área de log de eventos usando colores según el tipo de mensaje de salida.
+     * 
+     * @param message el texto que será escrito en log
+     * @param type el tipo característico (ej. "ERROR", "SUCCESS", "INFO")
+     */
     public void logTypedMessage(String message, String type) {
         Color color = messageColors.getOrDefault(type.toUpperCase(), Color.WHITE);
         errorLog.setForeground(color);

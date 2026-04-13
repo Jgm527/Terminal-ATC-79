@@ -1,5 +1,9 @@
 package piano.atc79.model;
 
+/**
+ * Representa un vuelo monitorizado por el juego, incluyendo sus propiedades físicas
+ * y estado dinámico como la posición, velocidad y el rumbo.
+ */
 public class Flight {
     private String callsign;
     private AircraftModel model;
@@ -15,6 +19,15 @@ public class Flight {
     private String approachType;
     private static final int MIN_VERTICAL_SEPARATION = 1000;
 
+    /**
+     * Construye un Flight (Vuelo) con datos de posición y cinéticos básicos.
+     * 
+     * @param callsign el indicativo de llamada (identificador) del vuelo
+     * @param model el {@link AircraftModel} que describe las características del avión
+     * @param currentPosition la {@link Position} inicial del avión
+     * @param heading el rumbo inicial en grados
+     * @param speed la velocidad inicial sobre el terreno
+     */
     public Flight(String callsign, AircraftModel model, Position currentPosition, int heading, int speed) {
         this.callsign = callsign;
         this.model = model;
@@ -120,6 +133,10 @@ public class Flight {
         return model.getMaxFuel() * (0.7 + Math.random() * 0.3);
     }
 
+    /**
+     * Actualiza la posición del vuelo durante cada ciclo/tick de la simulación,
+     * teniendo en cuenta la velocidad actual, rumbo, y parámetros objetivos.
+     */
     public void updatePosition() {
         if (this.status == FlightStatus.LANDING && assignedRunway != null) {
             landLogic();
@@ -190,6 +207,9 @@ public class Flight {
         }
     }
 
+    /**
+     * Actualiza la cantidad de combustible de forma basada en tasas de consumo y el tiempo transcurrido.
+     */
     public void updateFuel() {
         double consumptionPerSecond = getModel().getFuelConsumption() / 3600.0;
         double newFuel = getFuel() - consumptionPerSecond;
@@ -278,6 +298,12 @@ public class Flight {
         return model.getMinSpeed() + 50;
     }
 
+    /**
+     * Comprueba si dos vuelos están en conflicto (violando la separación mínima).
+     * 
+     * @param f el otro {@link Flight}
+     * @return true si existe un conflicto, false en caso contrario
+     */
     public boolean areInConflict(Flight f) {
         //TODO Arreglar conflictos frontales (No se debe tener en cuenta el wakeIntensity (min separation)
         double horizontalDistance = this.getCurrentPosition().distanceTo(f.getCurrentPosition());

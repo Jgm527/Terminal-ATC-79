@@ -8,11 +8,19 @@ import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Ventana principal principal de la aplicación. Maneja la configuración del JFrame del menú de la UI principal y en el interior incluye el diseño.
+ */
 public class WindowView {
     private JFrame window;
     private GameController gameController;
     private MainGamePanel radar;
 
+    /**
+     * Construye y crea la instancia base interactiva principal de la ventana inicial inicial para jugar a la aplicación.
+     * 
+     * @param gameController el objeto base interconector con el estado que manejará y tomará las acciones de interfaz.
+     */
     public WindowView(GameController gameController) {
         this.gameController = gameController;
         window = new JFrame();
@@ -33,11 +41,19 @@ public class WindowView {
         });
     }
 
+    /**
+     * Refresca y ajusta los valores referenciados para reflejar y aplicar cambios.
+     * 
+     * @param flights el listado en matriz modificado actual de los vuelos representados en directo.
+     */
     public void updateView(List<Flight> flights) {
         radar.updateFlightInfo(flights);
         radar.updateData(flights);
     }
 
+    /**
+     * Abre y muestra por pantalla de forma representativa principal la gráfica.
+     */
     public void show() {
         window.setVisible(true);
     }
