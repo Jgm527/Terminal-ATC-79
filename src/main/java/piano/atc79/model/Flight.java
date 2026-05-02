@@ -17,7 +17,7 @@ public class Flight {
     private int targetSpeed;
     private Runway assignedRunway;
     private String approachType;
-    private static final int MIN_VERTICAL_SEPARATION = 1000;
+    private static final ApproachRules APPROACH_RULES = new ApproachRules();
 
     /**
      * Construye un Flight (Vuelo) con datos de posición y cinéticos básicos.
@@ -139,7 +139,7 @@ public class Flight {
      */
     public void updatePosition() {
         if (this.status == FlightStatus.LANDING && assignedRunway != null) {
-            landLogic();
+            APPROACH_RULES.applyLandingGuidance(this);
         }
 
         updateHeading();
@@ -219,21 +219,13 @@ public class Flight {
         setFuel(newFuel);
     }
 
+    /**
+     * Evalúa si el vuelo puede iniciar la fase de aterrizaje con la aproximación actual.
+     *
+     * @return true si el vuelo está en condiciones de entrar en LANDING
+     */
     public boolean isReadyToLand() {
-        if (this.assignedRunway == null) return false;
-
-        double dist = this.getCurrentPosition().distanceTo(assignedRunway.getStartPoint());
-        boolean alineado = assignedRunway.isAligned(this);
-
-        // TODO Arreglar la altura (calcular curva VIS/ILS)
-        if ("ILS".equals(approachType) && dist < 12.0 && alineado) return true;
-
-        // TODO Arreglar la altura (calcular curva VIS/ILS)
-        // si se calcula la curva hay que revisar si engancha o no, y si no engancha mostrarlo, y si engancha se evita el
-        //rebote porque ya tiene un Path asignado
-        if ("VIS".equals(approachType) && dist < 6.0 && alineado && currentPosition.getZ() <= 3000) return true;
-
-        return false;
+        return APPROACH_RULES.isReadyToLand(this);
     }
 
     public boolean checkLandingCondition() {
@@ -243,79 +235,6 @@ public class Flight {
         boolean approachOK = this.getApproachType().equals("ILS") && assignedRunway.hasILS() || this.getApproachType().equals("VIS");
 
         return altitudeOk && speedOk && distanceOK && approachOK;
-    }
-
-    private void landLogic() {
-        if (assignedRunway == null) return;
-
-        double distInicio = currentPosition.distanceTo(assignedRunway.getStartPoint());
-
-        // 1. Si ya estamos en pista, forzamos aterrizaje y detenemos lógica
-        if (distInicio < 0.1 || currentPosition.getZ() < 10) {
-            this.targetAltitude = 0;
-            this.targetSpeed = 0;
-            return;
-        }
-
-        int altitudSenda = (int) (distInicio * 300);
-
-        // 2. Ejecutar lógica según tipo
-        if ("ILS".equals(approachType)) {
-            approachILS(distInicio, altitudSenda);
-        } else if ("VIS".equals(approachType)) {
-            approachVIS(distInicio, altitudSenda);
-        } else {
-            // Fallback: Si no tiene tipo, forzar descenso suave
-            this.targetAltitude = Math.min(this.targetAltitude, altitudSenda);
-        }
-    }
-
-    private void approachILS(double dist, int altSenda) {
-        // Solo verifica alineación, no verifiques la altura actual
-        if (dist < 12.0 && assignedRunway.isAligned(this)) {
-            // Asigna la senda directamente. El avión bajará (o subirá nivelado)
-            // para alcanzarla, tal como dicta la física de updateAltitude.
-            this.targetAltitude = altSenda;
-            this.targetSpeed = calculateApproachVelocity(dist);
-        }
-    }
-
-    private void approachVIS(double dist, int altSenda) {
-        // Si está alineado y en rango visual, engancha la senda
-        if (dist < 6.0 && assignedRunway.isAligned(this)) {
-            this.targetAltitude = altSenda;
-            this.targetSpeed = calculateApproachVelocity(dist);
-        }
-    }
-
-    private int calculateApproachVelocity(double dist) {
-        if (dist < 0.05) return 0;
-
-        if (dist < 1.0) return model.getMinSpeed();
-
-        if (dist < 4.0) return model.getMinSpeed() + 20;
-
-        return model.getMinSpeed() + 50;
-    }
-
-    /**
-     * Comprueba si dos vuelos están en conflicto (violando la separación mínima).
-     * 
-     * @param f el otro {@link Flight}
-     * @return true si existe un conflicto, false en caso contrario
-     */
-    public boolean areInConflict(Flight f) {
-        //TODO Arreglar conflictos frontales (No se debe tener en cuenta el wakeIntensity (min separation)
-        double horizontalDistance = this.getCurrentPosition().distanceTo(f.getCurrentPosition());
-        double verticalDistance = Math.abs(this.getCurrentPosition().getZ() - f.getCurrentPosition().getZ());
-        double minHorizontalSeparation = Math.max(this.getModel().getCategory().getMinSeparationNM(),
-                f.getModel().getCategory().getMinSeparationNM());
-
-        if (horizontalDistance < minHorizontalSeparation &&
-                verticalDistance < MIN_VERTICAL_SEPARATION) {
-            return true;
-        }
-        return false;
     }
 
 }

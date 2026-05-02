@@ -1,0 +1,263 @@
+[33mcommit 949f928b0005bcbe8018bc6b44b9a1704c151d70[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Mon Apr 13 20:35:55 2026 +0200
+
+    Añadidos javadocs
+
+[33mcommit 30188d3456906422ee1421a83aa04a0e2796b002[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Sun Mar 22 20:54:43 2026 +0100
+
+    Refactorizada la vista para liberar la ventana y poder hacer más menús diferentes
+
+[33mcommit 5476877044df7bcb859f453a2de714a3d5f703f0[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Thu Mar 12 10:05:29 2026 +0100
+
+    Mejorada las aproximaciones y aterrizajes de los aviones
+
+[33mcommit 0b01f616c21c727b9749cf5eed2730b2de349abd[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Sat Feb 28 18:43:48 2026 +0100
+
+    Dibujados conos ILS de las pistas en el Radar
+
+[33mcommit 1a5ec18fd715dd5c3ec6e64dbdf0512167d47777[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Sat Feb 21 00:32:30 2026 +0100
+
+    Cambiada la forma en la que se recogen y muestran los mensajes al jugador usando Map
+
+[33mcommit 75daed0f85f6ff3f0377349944ff35ee24cc5b12[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Fri Feb 20 01:18:12 2026 +0100
+
+    Refactorizadas varias clases, movidas varias logicas y añadida clase Game para respetar modelo MVC
+
+[33mcommit 70f36164df801bf7f69bbd8149c02c3a668296cd[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Thu Feb 19 10:35:47 2026 +0100
+
+    Eliminado atributo altitud duplicado con eje z de la clase Position, ahora se usa Z Position en todo
+
+[33mcommit 45b4818e14fdf1ce1c6e888e0f1eba4227a1da8e[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Thu Feb 19 01:48:05 2026 +0100
+
+    Añadida información de aeropuerto en un nuevo panel superior y retocada información de vuelos
+
+[33mcommit ec9c82ba774ae560ab877eed7107294d327524ac[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Thu Feb 19 00:20:23 2026 +0100
+
+    Añadida información de vuelos al panel
+
+[33mcommit a1cd855d34be7f31eef563a38200bc3e62578a2c[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 18 21:54:50 2026 +0100
+
+    Añadidos nuevos métodos para dibujar aviones
+
+[33mcommit 42e458a90e6e0cee445a7b3690c6681aaf46c635[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 18 18:15:29 2026 +0100
+
+    Refactorizado CommandParser con excepciones personalizadas y ajustada la vista para mostrarlas
+
+[33mcommit 3318770fd7d40b77923e645841b38e568b8492e1[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 18 17:23:41 2026 +0100
+
+    Decorados los paneles laterales y ajustado tamaño y escala de la ventana
+
+[33mcommit b76ac2472279db8765083d3ceb8377a93c004e05[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 18 16:56:29 2026 +0100
+
+    Añadido panel lateral para excepciones e información
+
+[33mcommit 976dfb0d3b989267048e1f4c9f6ae93ff53d21cd[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 18 03:18:19 2026 +0100
+
+    Corregida lógica de aterrizajes
+
+[33mcommit f57e7d46199d6c710f1caa89e0dcb44b2a7729a1[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 18 02:56:13 2026 +0100
+
+    Añadida linea de comandos a la ventana (JTextField) y dibujados aviones y pistas
+
+[33mcommit 8e1d8985f4b8ee2ecb2de1d0c5512484ed242f3d[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 18 00:04:34 2026 +0100
+
+    Dibujado lineas y circulos del radar
+
+[33mcommit bbf70ac9338053f73ff10aa9cc011c05c4b0d68e[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Tue Feb 17 23:02:35 2026 +0100
+
+    Añadida clase para dibujar radar con Graphics2D en un futuro (esperemos que no lejano)
+
+[33mcommit e14f733102ab904bb1b7e3da65b63fc67d9c806a[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Tue Feb 17 15:41:39 2026 +0100
+
+    Añadida ventana con JFrame y Java Swing
+
+[33mcommit 4eea7a30c10333d913d738e324b477e10a9df9dd[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Mon Feb 16 21:55:43 2026 +0100
+
+    Añadida logica y parseado  de aterrizajes (falta comprobarla)
+
+[33mcommit 7b12b0e6cd8e43c3c5767532e5044b4e12e9217f[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Mon Feb 16 20:17:52 2026 +0100
+
+    Movida logica de movimiento de combustible de FuelManager a Flights
+
+[33mcommit 268895c2f9914d1409532961b65be9f55f69506c[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Mon Feb 16 20:08:56 2026 +0100
+
+    Movida logica de movimiento de aviones de  PhysicsEngine a Flights
+
+[33mcommit 84422ba6f7ee4843efe390af1030ef5a3986cf3f[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Sun Feb 15 22:21:47 2026 +0100
+
+    Añadido metodos para saber orientación de pista y añadidas algunas reglas de aterrizaje
+
+[33mcommit a9991121b9a1c79356e5c47772077d992b31a203[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 16:16:22 2026 +0100
+
+    Añadida la clase CommandParser para la interpretación de comandos
+
+[33mcommit 3b9f0978da3ce5b4d3fe30306154ce6dc79e8c50[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 14:52:18 2026 +0100
+
+    Añadido un pequeño test para probar funcionalidades en main
+
+[33mcommit 62a9a78e38726ca37efa855fee3334a0389d2689[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 14:35:35 2026 +0100
+
+    Corregida lógica Heading en aviones
+
+[33mcommit 7b8f0ad1568b477d7b58f6f8d9069487eb7ebf56[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 13:15:39 2026 +0100
+
+    Añadido gameview
+
+[33mcommit c0ebe774db3787fbb3a693f3e3f0487554467259[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 12:43:18 2026 +0100
+
+    Añadida clase FuelManager e implementada en game controller
+
+[33mcommit ee9bb92a9fcb20e8792d36e31df7e775055a0125[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 12:33:30 2026 +0100
+
+    Añadida clase GameController en el paquete controller
+
+[33mcommit 0ce4906618cb5301057d7f7ae90cb8ead990bff6[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 12:12:14 2026 +0100
+
+    Añadida lógica de detección de conflictos
+
+[33mcommit 1e147d2ecb8a21c9e3631ef075cd5135ae753cbb[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 11:51:22 2026 +0100
+
+    Mejorada y arreglada logica de giro en PhysicsEngine
+
+[33mcommit 635eaa786e8c36d1ddd13189a62053f49276f8b5[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 11:44:12 2026 +0100
+
+    Añadida logica de giro en PhysicsEngine
+
+[33mcommit 19295c3cae989104ceedb7383e0fd3017632cd9c[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 11:37:54 2026 +0100
+
+    Añadida clase PhysicsEngine
+
+[33mcommit f03d09edbfd98efb3050932f204086650565349e[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 09:45:19 2026 +0100
+
+    Creado el paquete logic
+
+[33mcommit 15723933c219958ea6115cf9e2d701fd516dbcfb[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 09:42:02 2026 +0100
+
+    Añadido método toString en Position
+
+[33mcommit 3cdce45af58681440a655df1085dfd2cb19a01f4[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 09:39:21 2026 +0100
+
+    Añadidos getters en la clase Flight
+
+[33mcommit a6eef6cd13e0e485f801416e1cb01533928bb847[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 09:34:10 2026 +0100
+
+    Amadida clase Score
+
+[33mcommit b76f051f9171aadd7075db85b42eca1c470edab9[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 09:27:27 2026 +0100
+
+    Añadida clase Flight y atributo maxFuel en AircraftModel
+
+[33mcommit 065f7f67e213650ab3fc88dbf73ccfd72f4b9ad8[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 09:07:28 2026 +0100
+
+    Añadida la clase aeropuerto
+
+[33mcommit 8be788fae8b94dabbb0434cf503a210fbcee902d[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 09:00:20 2026 +0100
+
+    Añadida la clase pista de aterrizaje
+
+[33mcommit 40568707855fdb3758e05c907ff0c4fda59d78b8[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 08:53:03 2026 +0100
+
+    Añadida clase Modelo de avión
+
+[33mcommit 721d4652e7efd0df5da0c6997ad663401caa97d2[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Wed Feb 11 08:38:59 2026 +0100
+
+    Añadido enum de estados de vuelo
+
+[33mcommit 85236453650376c10ff3ffd404ec60b52ca698f9[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Tue Feb 10 20:57:35 2026 +0100
+
+    Añadido enum Categorias de aviones
+
+[33mcommit 0abb579f663d8b6d3a95ce92a8096c6203180d9b[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Tue Feb 10 20:42:03 2026 +0100
+
+    Añadida clase Position en el paquete model
+
+[33mcommit 78cda9b7173178f617f697a745365f58ef9165e5[m
+Author: Javier Guisande Moreira <javierguisandemoreira@gmail.com>
+Date:   Tue Feb 10 15:36:15 2026 +0100
+
+    Primer commit de Terminal ATC 79

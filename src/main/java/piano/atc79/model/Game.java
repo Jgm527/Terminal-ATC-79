@@ -18,6 +18,7 @@ public class Game {
     private boolean gameOver;
     private Map<String, String> radioTemplates;
     private List<String> eventLog;
+    private SeparationRules separationRules;
 
     /**
      * Construye un nuevo Juego (Game) con un aeropuerto especificado.
@@ -32,6 +33,7 @@ public class Game {
         this.commandParser = new CommandParser();
         this.gameOver = false;
         this.eventLog = new ArrayList<>();
+        this.separationRules = new SeparationRules();
         initRadioTemplates();
     }
 
@@ -45,6 +47,7 @@ public class Game {
 
         radioTemplates.put("EVT_LANDED", ">>> %s ha aterrizado con éxito");
         radioTemplates.put("EVT_TCAS", "TCAS: Alerta de proximidad entre %s y %s.");
+        radioTemplates.put("EVT_COLLISION", "COLISIÓN: Impacto frontal entre %s y %s.");
         radioTemplates.put("EVT_FUEL", "EMERGENCIA: %s con combustible crítico.");
     }
 
@@ -104,14 +107,18 @@ public class Game {
         for (int i = flights.size() - 1; i >= 0; i--) {
             Flight f = flights.get(i);
 
-            // Buscar aviones que han colisionado
+            // Buscar conflictos y colisiones entre pares de vuelos
             for (int j = i + 1; j < flights.size(); j++) {
                 Flight f2 = flights.get(j);
 
-                if (f.areInConflict(f2)) {
-                    addEvent("EVT_TCAS", f.getCallsign(), f2.getCallsign());
+                if (separationRules.areInCollision(f, f2)) {
+                    addEvent("EVT_COLLISION", f.getCallsign(), f2.getCallsign());
                     gameOver = true;
                     return;
+                }
+
+                if (separationRules.areInConflict(f, f2)) {
+                    addEvent("EVT_TCAS", f.getCallsign(), f2.getCallsign());
                 }
             }
 
