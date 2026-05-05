@@ -18,6 +18,11 @@ public class Flight {
     private Runway assignedRunway;
     private String approachType;
     private static final ApproachRules APPROACH_RULES = new ApproachRules();
+    private HoldingPoint holdingPoint;
+    private boolean enteringHolding;
+    private static final double HOLD_RADIUS_TOLERANCE_NM = 0.10;
+    private static final double HOLD_ENTRY_CAPTURE_NM = 0.20;
+    private static final int HOLD_MAX_RADIAL_CORRECTION_DEGREES = 40;
 
     /**
      * Construye un Flight (Vuelo) con datos de posición y cinéticos básicos.
@@ -89,6 +94,10 @@ public class Flight {
         return approachType;
     }
 
+    public HoldingPoint getHoldingPoint() {
+        return holdingPoint;
+    }
+
     private void setHeading(int heading) {
         this.heading = heading;
     }
@@ -138,6 +147,10 @@ public class Flight {
      * teniendo en cuenta la velocidad actual, rumbo, y parámetros objetivos.
      */
     public void updatePosition() {
+        if (this.status == FlightStatus.HOLDING && holdingPoint != null) {
+            updateHoldingPattern();
+        }
+
         if (this.status == FlightStatus.LANDING && assignedRunway != null) {
             APPROACH_RULES.applyLandingGuidance(this);
         }
@@ -235,6 +248,104 @@ public class Flight {
         boolean approachOK = this.getApproachType().equals("ILS") && assignedRunway.hasILS() || this.getApproachType().equals("VIS");
 
         return altitudeOk && speedOk && distanceOK && approachOK;
+    }
+
+    /**
+     * Activa un patrón de espera circular alrededor de un punto.
+     *
+     * @param holdingPoint punto de espera asignado
+     */
+    public void enterHolding(HoldingPoint holdingPoint) {
+        this.holdingPoint = holdingPoint;
+        this.enteringHolding = true;
+        this.assignedRunway = null;
+        this.approachType = null;
+        this.status = FlightStatus.HOLDING;
+        this.targetSpeed = this.model.getMinSpeed() + 20;
+    }
+
+    /**
+     * Cancela el patrón de espera actual y devuelve el vuelo a EN_ROUTE.
+     */
+    public void exitHolding() {
+        this.holdingPoint = null;
+        this.enteringHolding = false;
+        if (this.status == FlightStatus.HOLDING) {
+            this.status = FlightStatus.EN_ROUTE;
+        }
+    }
+
+    private void updateHoldingPattern() {
+        Position center = holdingPoint.getPosition();
+        double radius = holdingPoint.getRadiusNm();
+        double distanceToCenter = this.currentPosition.distanceTo(center);
+
+        if (enteringHolding) {
+            Position interceptPoint = getRadialInterceptPoint(center, radius);
+            this.targetHeading = calculateHeadingTo(interceptPoint);
+            if (this.currentPosition.distanceTo(interceptPoint) <= getDynamicCaptureRadius(HOLD_ENTRY_CAPTURE_NM)) {
+                enteringHolding = false;
+            }
+            return;
+        }
+
+        int radialHeading = calculateHeadingBetween(center, this.currentPosition);
+        int tangentClockwiseHeading = (radialHeading + 90) % 360;
+        int radialCorrection = computeRadialCorrection(distanceToCenter, radius);
+        this.targetHeading = (tangentClockwiseHeading + radialCorrection + 360) % 360;
+    }
+
+    private int calculateHeadingTo(Position target) {
+        double dx = target.getX() - this.currentPosition.getX();
+        double dy = target.getY() - this.currentPosition.getY();
+        int headingToTarget = (int) Math.round(Math.toDegrees(Math.atan2(dx, dy)));
+        return (headingToTarget + 360) % 360;
+    }
+
+    private int calculateHeadingBetween(Position from, Position to) {
+        double dx = to.getX() - from.getX();
+        double dy = to.getY() - from.getY();
+        int heading = (int) Math.round(Math.toDegrees(Math.atan2(dx, dy)));
+        return (heading + 360) % 360;
+    }
+
+    private double getDynamicCaptureRadius(double baseRadius) {
+        double nmPerSecond = this.speed / 3600.0;
+        return baseRadius + (nmPerSecond * 2.0);
+    }
+
+    private Position getRadialInterceptPoint(Position center, double radius) {
+        double dx = this.currentPosition.getX() - center.getX();
+        double dy = this.currentPosition.getY() - center.getY();
+        double norm = Math.sqrt((dx * dx) + (dy * dy));
+
+        if (norm < 1e-6) {
+            return new Position(center.getX(), center.getY() + radius, 0);
+        }
+
+        double unitX = dx / norm;
+        double unitY = dy / norm;
+        return new Position(
+                center.getX() + (unitX * radius),
+                center.getY() + (unitY * radius),
+                0
+        );
+    }
+
+    private int computeRadialCorrection(double distanceToCenter, double radius) {
+        double radialError = distanceToCenter - radius;
+        if (Math.abs(radialError) <= HOLD_RADIUS_TOLERANCE_NM) {
+            return 0;
+        }
+        double normalizedError = radialError / Math.max(radius, 0.1);
+        int correction = (int) Math.round(normalizedError * HOLD_MAX_RADIAL_CORRECTION_DEGREES);
+        if (correction > HOLD_MAX_RADIAL_CORRECTION_DEGREES) {
+            return HOLD_MAX_RADIAL_CORRECTION_DEGREES;
+        }
+        if (correction < -HOLD_MAX_RADIAL_CORRECTION_DEGREES) {
+            return -HOLD_MAX_RADIAL_CORRECTION_DEGREES;
+        }
+        return correction;
     }
 
 }

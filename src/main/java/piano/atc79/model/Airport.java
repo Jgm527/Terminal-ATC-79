@@ -10,6 +10,7 @@ public class Airport {
     private String id;
     private String name;
     private List<Runway> runways;
+    private List<HoldingPoint> holdingPoints;
     private int minimumVectoringAltitude;
 
     /**
@@ -24,6 +25,7 @@ public class Airport {
         this.name = name;
         this.minimumVectoringAltitude = minimumVectoringAltitude;
         runways = new ArrayList<>();
+        holdingPoints = new ArrayList<>();
     }
 
     public String getId() {
@@ -42,6 +44,10 @@ public class Airport {
         return minimumVectoringAltitude;
     }
 
+    public List<HoldingPoint> getHoldingPoints() {
+        return holdingPoints;
+    }
+
     /**
      * Añade una nueva pista a este aeropuerto.
      * 
@@ -49,6 +55,15 @@ public class Airport {
      */
     public void addRunway(Runway runway) {
         runways.add(runway);
+    }
+
+    /**
+     * Añade un punto de espera al aeropuerto.
+     *
+     * @param holdingPoint punto de espera a añadir
+     */
+    public void addHoldingPoint(HoldingPoint holdingPoint) {
+        holdingPoints.add(holdingPoint);
     }
 
     /**
@@ -61,6 +76,21 @@ public class Airport {
         for (Runway r : runways) {
             if (r.getId().equalsIgnoreCase(id)) {
                 return r;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Busca un punto de espera por identificador.
+     *
+     * @param id identificador del punto de espera
+     * @return el punto si existe, o null en caso contrario
+     */
+    public HoldingPoint findHoldingPoint(String id) {
+        for (HoldingPoint point : holdingPoints) {
+            if (point.getId().equalsIgnoreCase(id)) {
+                return point;
             }
         }
         return null;

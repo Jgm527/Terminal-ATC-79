@@ -2,6 +2,7 @@ package piano.atc79.view;
 
 import piano.atc79.model.Airport;
 import piano.atc79.model.Flight;
+import piano.atc79.model.HoldingPoint;
 import piano.atc79.model.Position;
 import piano.atc79.model.Runway;
 
@@ -62,6 +63,11 @@ public class RadarCanvas extends JPanel {
         // Dibujar pistas
         for (Runway r : airport.getRunways()) {
             drawRunway(g2d, r, centerX, centerY);
+        }
+
+        // Dibujar puntos de espera
+        for (HoldingPoint point : airport.getHoldingPoints()) {
+            drawHoldingPoint(g2d, point);
         }
 
         // Dibujar vuelos
@@ -139,6 +145,18 @@ public class RadarCanvas extends JPanel {
         g2d.drawString(f.getCallsign(), flightPosition.x + 10, flightPosition.y);
         g2d.drawString("Alt: " + f.getCurrentPosition().getZ(), flightPosition.x + 10, flightPosition.y + 12);
         g2d.drawString("Spd: " + f.getSpeed(), flightPosition.x + 10, flightPosition.y + 24);
+    }
+
+    private void drawHoldingPoint(Graphics2D g2d, HoldingPoint point) {
+        Point p = toScreen(point.getPosition());
+        int radiusPx = (int) Math.round(point.getRadiusNm() * SCALE);
+
+        g2d.setColor(new Color(255, 140, 0, 100));
+        g2d.drawOval(p.x - radiusPx, p.y - radiusPx, radiusPx * 2, radiusPx * 2);
+
+        g2d.setColor(Color.ORANGE);
+        g2d.drawOval(p.x - 5, p.y - 5, 10, 10);
+        g2d.drawString(point.getId(), p.x + 8, p.y - 8);
     }
 
     private Point toScreen(Position pos) {

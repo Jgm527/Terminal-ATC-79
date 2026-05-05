@@ -55,6 +55,7 @@ public class Main {
         Position start28 = new Position(1.6, 0.5, 0);
         Position end28 = new Position(0, 0, 0);
         alicante.addRunway(new Runway("28", start28, end28, false));
+        alicante.addHoldingPoint(new HoldingPoint("H1", new Position(-2.5, 2.2, 0), HoldingPoint.DEFAULT_HOLD_RADIUS_NM));
 
         return alicante;
     }

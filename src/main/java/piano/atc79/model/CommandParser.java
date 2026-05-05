@@ -9,6 +9,7 @@ import java.util.List;
  * <p>Ejemplos de comandos manejados:</p>
  * <ul>
  *   <li>{@code IBE1234 H 250} - Cambiar el rumbo del vuelo a 250 grados</li>
+ *   <li>{@code IBE1234 HLD H1 3000} - Enviar vuelo al punto de espera H1 a 3000 pies</li>
  *   <li>{@code IBE1234 CLR ILS 10} - Autorizar aterrizaje instrumental en pista 10</li>
  * </ul>
  */
@@ -53,6 +54,8 @@ public class CommandParser {
             switch (action) {
                 case "H", "A", "S":
                     return handleBasicMovement(action, commands[2], flight, game);
+                case "HLD":
+                    return handleHolding(commands, flight, airport, game);
                 case "CLR":
                     return handleClearance(commands, flight, airport, game);
                 default:
@@ -70,6 +73,7 @@ public class CommandParser {
         String msg = "";
         switch (action) {
             case "H" -> {
+                f.exitHolding();
                 f.setTargetHeading(val);
                 msg = String.format(game.getTemplate("CMD_H"), f.getCallsign(), val);
             }
@@ -96,11 +100,13 @@ public class CommandParser {
         if (rw == null) throw new CommandExceptions("Pista " + runwayId + " no encontrada.");
 
         if (type.equals("VIS")) {
+            f.exitHolding();
             f.setApproachType(type);
             f.setAssignedRunway(rw);
             f.setStatus(FlightStatus.VIS_APPROACH);
             return String.format(game.getTemplate("CMD_CLRVIS"), f.getCallsign(), type, runwayId);
         } else if (type.equals("ILS")) {
+            f.exitHolding();
             f.setApproachType(type);
             f.setAssignedRunway(rw);
             f.setStatus(FlightStatus.ILS_APPROACH);
@@ -108,5 +114,26 @@ public class CommandParser {
         } else {
             throw new CommandExceptions("Tipo de aproximación no encontrada");
         }
+    }
+
+    private String handleHolding(String[] parts, Flight f, Airport airport, Game game) throws CommandExceptions {
+        if (parts.length < 3) {
+            throw new CommandExceptions("Uso: HLD [PUNTO] [ALT_OPCIONAL]");
+        }
+
+        String holdingPointId = parts[2].toUpperCase();
+        HoldingPoint holdingPoint = airport.findHoldingPoint(holdingPointId);
+        if (holdingPoint == null) {
+            throw new CommandExceptions("Holding point " + holdingPointId + " no encontrado.");
+        }
+
+        int holdAltitude = f.getTargetAltitude();
+        if (parts.length >= 4) {
+            holdAltitude = Integer.parseInt(parts[3]);
+            f.setTargetAltitude(holdAltitude);
+        }
+
+        f.enterHolding(holdingPoint);
+        return String.format(game.getTemplate("CMD_HLD"), f.getCallsign(), holdingPoint.getId(), holdAltitude);
     }
 }

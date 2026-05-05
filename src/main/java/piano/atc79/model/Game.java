@@ -42,6 +42,7 @@ public class Game {
         radioTemplates.put("CMD_H", "%s giró a rumbo %d");
         radioTemplates.put("CMD_A", "%s se mantendrá un nivel de %d pies");
         radioTemplates.put("CMD_S", "%s cambió su velocidad a %d nudos");
+        radioTemplates.put("CMD_HLD", "%s, proceda al punto de espera %s y mantenga %d pies");
         radioTemplates.put("CMD_CLRVIS", "%s, autorizado a aproximación VISUAL en la pista %s");
         radioTemplates.put("CMD_CLRILS", "%s, autorizado a aproximación ILS en la pista %s");
 
