@@ -2,6 +2,8 @@ package piano.atc79.model;
 
 /**
  * Encapsula las reglas de aproximación (ILS/VIS) y guiado final durante la fase de aterrizaje.
+ * Durante la aproximación final, tambien ajusta el rumbo del avion hacia el umbral
+ * de la pista (simulando un localizer ILS) para evitar que el avion pase de largo.
  */
 public class ApproachRules {
 
@@ -38,6 +40,7 @@ public class ApproachRules {
 
     /**
      * Aplica la lógica de guiado durante LANDING según el tipo de aproximación actual.
+     * Incluye guiado lateral para que el avion se dirija al umbral de la pista.
      *
      * @param flight vuelo en fase de aterrizaje
      */
@@ -68,19 +71,46 @@ public class ApproachRules {
         }
     }
 
+    /**
+     * Guiado ILS: ajusta altitud, velocidad y rumbo para seguir el localizer
+     * y la senda de planeo hacia el umbral de la pista.
+     */
     private void applyIlsGuidance(Flight flight, double dist, int glideAltitude) {
-        // Solo verifica alineación, no la altura actual.
-        if (dist < 12.0 && flight.getAssignedRunway().isAligned(flight)) {
-            flight.setTargetAltitude(glideAltitude);
-            flight.setTargetSpeed(calculateApproachVelocity(flight, dist));
-        }
+        flight.setTargetAltitude(glideAltitude);
+        flight.setTargetSpeed(calculateApproachVelocity(flight, dist));
+        // Simular localizer ILS: rumbo continuo hacia el umbral
+        flight.setTargetHeading(calculateHeadingToThreshold(
+                flight.getCurrentPosition(),
+                flight.getAssignedRunway().getStartPoint()
+        ));
     }
 
+    /**
+     * Guiado visual: ajusta altitud, velocidad y rumbo hacia el umbral.
+     */
     private void applyVisGuidance(Flight flight, double dist, int glideAltitude) {
-        if (dist < 6.0 && flight.getAssignedRunway().isAligned(flight)) {
-            flight.setTargetAltitude(glideAltitude);
-            flight.setTargetSpeed(calculateApproachVelocity(flight, dist));
-        }
+        flight.setTargetAltitude(glideAltitude);
+        flight.setTargetSpeed(calculateApproachVelocity(flight, dist));
+        // Guiado visual: mantener rumbo hacia el umbral
+        flight.setTargetHeading(calculateHeadingToThreshold(
+                flight.getCurrentPosition(),
+                flight.getAssignedRunway().getStartPoint()
+        ));
+    }
+
+    /**
+     * Calcula el rumbo magnetico desde una posicion origen hasta un destino,
+     * usando la convencion aeronautica (0° = norte, 90° = este).
+     *
+     * @param from posicion de origen
+     * @param to   posicion de destino
+     * @return rumbo en grados (0-359)
+     */
+    private static int calculateHeadingToThreshold(Position from, Position to) {
+        double dx = to.getX() - from.getX();
+        double dy = to.getY() - from.getY();
+        int heading = (int) Math.round(Math.toDegrees(Math.atan2(dx, dy)));
+        return (heading + 360) % 360;
     }
 
     private int calculateApproachVelocity(Flight flight, double dist) {

@@ -5,32 +5,58 @@ import piano.atc79.controller.*;
 import piano.atc79.view.*;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
- * Punto de entrada principal para la aplicación Terminal ATC 79.
+ * Punto de entrada principal para la aplicacion Terminal ATC 79.
  * Inicializa los componentes de la arquitectura MVC y comienza el juego.
- * 
- * <p>Ejemplo de uso:</p>
- * <pre>
- *   {@code
- *   // Automáticamente ejecutado al iniciar el programa
- *   Main.main();
- *   }
- * </pre>
+ *
+ * <p>El flujo de inicio ahora muestra una pantalla de titulo donde el jugador
+ * selecciona el aeropuerto antes de comenzar la partida.</p>
  */
 public class Main {
+
     /**
-     * Inicializa la aplicación, crea los componentes del aeropuerto y del juego,
-     * y muestra la vista principal de la ventana.
+     * Inicializa la aplicacion mostrando la pantalla de titulo para la seleccion
+     * del aeropuerto, y posteriormente lanza el juego con la eleccion del jugador.
      */
     static void main() {
-        Airport alicante = createAlicanteAirport();
+        SwingUtilities.invokeLater(Main::showTitleScreen);
+    }
 
-        Game game = new Game(alicante);
+    /**
+     * Muestra la pantalla de titulo con la rejilla de aeropuertos disponibles.
+     * Cuando el jugador selecciona uno, se cierra el menu y se inicia el juego.
+     */
+    private static void showTitleScreen() {
+        JFrame frame = new JFrame("Terminal ATC 79");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(900, 700);
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
 
-        GameController controller = new GameController(game);
+        TitleScreen titleScreen = new TitleScreen(airportCode -> {
+            frame.dispose();
+            startGame(airportCode);
+        });
 
-        setupInitialFlights(game);
+        frame.add(titleScreen);
+        frame.setVisible(true);
+    }
+
+    /**
+     * Inicia el juego con el aeropuerto seleccionado por el jugador.
+     *
+     * @param airportCode el codigo ICAO del aeropuerto elegido
+     */
+    private static void startGame(String airportCode) {
+        Airport airport = createAirportFromCode(airportCode);
+        Game game = new Game(airport);
+
+        SpawnProfile profile = SpawnProfile.forAirport(airportCode);
+        FlightSpawner spawner = new FlightSpawner(game, profile);
+
+        GameController controller = new GameController(game, spawner);
 
         SwingUtilities.invokeLater(() -> {
             WindowView view = new WindowView(controller);
@@ -41,35 +67,22 @@ public class Main {
     }
 
     /**
-     * Crea y configura el aeropuerto de Alicante con sus pistas correspondientes.
-     * 
-     * @return el objeto {@link Airport} completamente configurado para Alicante
+     * Fabrica el aeropuerto correspondiente al codigo ICAO seleccionado.
+     *
+     * @param code el codigo ICAO (ej. "LEAL", "LEBL", etc.)
+     * @return el {@link Airport} configurado
+     * @throws IllegalArgumentException si el codigo no corresponde a ningun aeropuerto
      */
-    private static Airport createAlicanteAirport() {
-        Airport alicante = new Airport("LEAL", "Alicante-Elche", 2000);
-
-        Position start10 = new Position(0, 0, 0);
-        Position end10 = new Position(1.6, 0.5, 0);
-        alicante.addRunway(new Runway("10", start10, end10, true));
-
-        Position start28 = new Position(1.6, 0.5, 0);
-        Position end28 = new Position(0, 0, 0);
-        alicante.addRunway(new Runway("28", start28, end28, false));
-        alicante.addHoldingPoint(new HoldingPoint("H1", new Position(-2.5, 2.2, 0), HoldingPoint.DEFAULT_HOLD_RADIUS_NM));
-
-        return alicante;
-    }
-
-    /**
-     * Prepara los vuelos iniciales en el juego para pruebas o el escenario de inicio.
-     * 
-     * @param game la instancia de {@link Game} donde se añadirán los vuelos
-     */
-    private static void setupInitialFlights(Game game) {
-        AircraftModel b737 = new AircraftModel("B737", "Boeing 737", AircraftCategory.MEDIUM, 250, 120, 2500.0, 26000, 15, 3, 3);
-
-        game.addFlight(new Flight("IBE1234", b737, new Position(-5.0, -1.9, 1000), 72, 120));
-        game.addFlight(new Flight("VLG4455", b737, new Position(4.0, 1.3, 1000), 252, 400));
-        game.addFlight(new Flight("IBE4321", b737, new Position(-9.0, -3.42, 2000), 72, 400));
+    private static Airport createAirportFromCode(String code) {
+        return switch (code) {
+            case "LEAL" -> AirportFactory.createLEAL();
+            case "LEBL" -> AirportFactory.createLEBL();
+            case "KLAX" -> AirportFactory.createKLAX();
+            case "EGLL" -> AirportFactory.createEGLL();
+            case "GCXO" -> AirportFactory.createGCXO();
+            case "BIKF" -> AirportFactory.createBIKF();
+            case "KJFK" -> AirportFactory.createKJFK();
+            default -> throw new IllegalArgumentException("Aeropuerto desconocido: " + code);
+        };
     }
 }

@@ -1,9 +1,6 @@
 package piano.atc79.controller;
 
-import piano.atc79.model.CommandExceptions;
-import piano.atc79.model.Airport;
-import piano.atc79.model.Flight;
-import piano.atc79.model.Game;
+import piano.atc79.model.*;
 import piano.atc79.view.WindowView;
 
 import java.util.List;
@@ -17,16 +14,19 @@ import javax.swing.*;
  */
 public class GameController {
     private Game game;
+    private FlightSpawner spawner;
     private Timer gameTimer;
     private WindowView view;
 
     /**
-     * Construye un GameController (Controlador de Juego) para una instancia específica.
-     * 
-     * @param game el modelo {@link Game} con la lógica de negocio
+     * Construye un GameController (Controlador de Juego) para una instancia especifica.
+     *
+     * @param game    el modelo {@link Game} con la logica de negocio
+     * @param spawner el generador de trafico {@link FlightSpawner}
      */
-    public GameController(Game game) {
+    public GameController(Game game, FlightSpawner spawner) {
         this.game = game;
+        this.spawner = spawner;
     }
 
     public void setView(WindowView view) {
@@ -39,6 +39,7 @@ public class GameController {
     public void start() {
         gameTimer = new Timer(1000, e -> {
             if (!game.isGameOver()) {
+                spawner.tick();
                 game.update();
 
                 for (String event : game.pullEvents()) {

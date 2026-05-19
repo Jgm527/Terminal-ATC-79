@@ -24,6 +24,9 @@ public class Flight {
     private static final double HOLD_ENTRY_CAPTURE_NM = 0.20;
     private static final int HOLD_MAX_RADIAL_CORRECTION_DEGREES = 40;
 
+    /** Distancia al umbral en el tick anterior durante LANDING, para detectar overshoot. */
+    private double previousLandingDist;
+
     /**
      * Construye un Flight (Vuelo) con datos de posición y cinéticos básicos.
      * 
@@ -44,6 +47,7 @@ public class Flight {
         this.targetHeading = heading;
         this.targetAltitude = getCurrentPosition().getZ();
         this.targetSpeed = speed;
+        this.previousLandingDist = -1;
     }
 
     public String getCallsign() {
@@ -153,6 +157,7 @@ public class Flight {
 
         if (this.status == FlightStatus.LANDING && assignedRunway != null) {
             APPROACH_RULES.applyLandingGuidance(this);
+            checkLandingOvershoot();
         }
 
         updateHeading();
@@ -239,6 +244,52 @@ public class Flight {
      */
     public boolean isReadyToLand() {
         return APPROACH_RULES.isReadyToLand(this);
+    }
+
+    /**
+     * Detecta si el avion ha pasado de largo la pista durante el aterrizaje.
+     * Si la distancia al umbral aumenta mientras esta a baja altitud, se
+     * ejecuta una aproximacion frustrada (go-around).
+     */
+    private void checkLandingOvershoot() {
+        if (assignedRunway == null) {
+            return;
+        }
+
+        double dist = currentPosition.distanceTo(assignedRunway.getStartPoint());
+
+        if (previousLandingDist < 0) {
+            previousLandingDist = dist;
+            return;
+        }
+
+        // Si la distancia crece estando cerca y a baja cota, hemos pasado de largo
+        if (dist > previousLandingDist + 0.02
+                && currentPosition.getZ() < 500
+                && dist < 5.0) {
+            goAround();
+            return;
+        }
+
+        previousLandingDist = dist;
+    }
+
+    /**
+     * Ejecuta una aproximacion frustrada (go-around). Restablece el vuelo a
+     * EN_ROUTE, asigna una altitud de escape y limpia los datos de aproximacion.
+     * El jugador debera re-vectorizar el avion para un nuevo intento.
+     */
+    public void goAround() {
+        int safeAltitude = currentPosition.getZ() + 1000;
+        if (safeAltitude > 5000) {
+            safeAltitude = 5000;
+        }
+        this.targetAltitude = safeAltitude;
+        this.targetSpeed = model.getCruiseSpeed();
+        this.assignedRunway = null;
+        this.approachType = null;
+        this.status = FlightStatus.EN_ROUTE;
+        this.previousLandingDist = -1;
     }
 
     public boolean checkLandingCondition() {

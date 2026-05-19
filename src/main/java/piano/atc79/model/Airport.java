@@ -2,23 +2,25 @@ package piano.atc79.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
- * Representa un aeropuerto con pistas e información básica.
+ * Representa un aeropuerto con pistas e informacion basica.
  */
 public class Airport {
     private String id;
     private String name;
     private List<Runway> runways;
     private List<HoldingPoint> holdingPoints;
+    private List<EntryRoute> entryRoutes;
     private int minimumVectoringAltitude;
 
     /**
      * Construye un nuevo Aeropuerto.
-     * 
-     * @param id identificador único del aeropuerto (ej. "LEAL")
+     *
+     * @param id identificador unico del aeropuerto (ej. "LEAL")
      * @param name el nombre completo del aeropuerto
-     * @param minimumVectoringAltitude la altitud mínima de seguridad en pies
+     * @param minimumVectoringAltitude la altitud minima de seguridad en pies
      */
     public Airport(String id, String name, int minimumVectoringAltitude) {
         this.id = id;
@@ -26,6 +28,7 @@ public class Airport {
         this.minimumVectoringAltitude = minimumVectoringAltitude;
         runways = new ArrayList<>();
         holdingPoints = new ArrayList<>();
+        entryRoutes = new ArrayList<>();
     }
 
     public String getId() {
@@ -94,5 +97,33 @@ public class Airport {
             }
         }
         return null;
+    }
+
+    /**
+     * Anade una nueva ruta de entrada (aerovia) a este aeropuerto.
+     *
+     * @param route la {@link EntryRoute} a anadir
+     */
+    public void addEntryRoute(EntryRoute route) {
+        entryRoutes.add(route);
+    }
+
+    /**
+     * Devuelve la lista de rutas de entrada configuradas para este aeropuerto.
+     *
+     * @return la lista de {@link EntryRoute}
+     */
+    public List<EntryRoute> getEntryRoutes() {
+        return entryRoutes;
+    }
+
+    /**
+     * Selecciona aleatoriamente una de las rutas de entrada disponibles.
+     *
+     * @param random el generador de numeros aleatorios
+     * @return una {@link EntryRoute} elegida al azar
+     */
+    public EntryRoute pickRandomEntryRoute(Random random) {
+        return entryRoutes.get(random.nextInt(entryRoutes.size()));
     }
 }

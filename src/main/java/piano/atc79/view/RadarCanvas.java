@@ -79,6 +79,8 @@ public class RadarCanvas extends JPanel {
     }
 
     private void drawRunway(Graphics2D g2d, Runway r, int centerX, int centerY) {
+        Stroke oldStroke = g2d.getStroke();
+
         g2d.setColor(Color.WHITE);
         g2d.setStroke(new BasicStroke(4.0f));
         int x1 = centerX + (int) (r.getStartPoint().getX() * SCALE);
@@ -118,6 +120,7 @@ public class RadarCanvas extends JPanel {
         }
         g2d.setColor(Color.WHITE);
         g2d.drawString(r.getId(), x1, y1 + 15);
+        g2d.setStroke(oldStroke);
     }
 
     private void drawFlight(Graphics2D g2d, Flight f) {
@@ -148,6 +151,7 @@ public class RadarCanvas extends JPanel {
     }
 
     private void drawHoldingPoint(Graphics2D g2d, HoldingPoint point) {
+        g2d.setStroke(new BasicStroke(1.0f));
         Point p = toScreen(point.getPosition());
         int radiusPx = (int) Math.round(point.getRadiusNm() * SCALE);
 
