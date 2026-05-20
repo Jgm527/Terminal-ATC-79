@@ -1,6 +1,9 @@
 package piano.atc79.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -29,6 +32,9 @@ public class FlightSpawner {
 
     /** Jitter en millas nauticas para diversificar altitudes en el mismo punto de spawn. */
     private static final double ALTITUDE_JITTER_NM = 0.5;
+
+    /** Distancia minima entre dos aviones en el mismo punto de spawn (NM). */
+    private static final double SPAWN_SEPARATION_NM = 0.5;
 
     private final Game game;
     private final SpawnProfile profile;
@@ -123,6 +129,7 @@ public class FlightSpawner {
 
     /**
      * Ensambla un nuevo vuelo con parametros aleatorios pero realistas.
+     * Evita que dos vuelos aparezcan en el mismo punto de spawn exacto.
      *
      * @return el {@link Flight} generado, o null si no se pudo crear
      */
@@ -137,8 +144,26 @@ public class FlightSpawner {
             return null;
         }
 
-        EntryRoute route = game.getAirport().pickRandomEntryRoute(random);
-        Position spawnPoint = route.pickRandomSpawnPoint(random);
+        // Buscar ruta y punto de spawn que no este ocupado por otro avion
+        EntryRoute route = null;
+        Position spawnPoint = null;
+
+        List<EntryRoute> shuffledRoutes = new ArrayList<>(game.getAirport().getEntryRoutes());
+        Collections.shuffle(shuffledRoutes, random);
+        for (EntryRoute r : shuffledRoutes) {
+            Position p = getFreeSpawnPoint(r);
+            if (p != null) {
+                route = r;
+                spawnPoint = p;
+                break;
+            }
+        }
+
+        // Fallback: si todas las posiciones estan ocupadas, usar una aleatoria
+        if (route == null) {
+            route = game.getAirport().pickRandomEntryRoute(random);
+            spawnPoint = route.pickRandomSpawnPoint(random);
+        }
 
         int heading = calculateHeading(route);
         int altitude = calculateAltitude(spawnPoint);
@@ -147,6 +172,41 @@ public class FlightSpawner {
         return new Flight(callsign, model,
                 new Position(spawnPoint.getX(), spawnPoint.getY(), altitude),
                 heading, speed);
+    }
+
+    /**
+     * Comprueba si una posicion tiene algun vuelo activo cerca (dentro de
+     * {@link #SPAWN_SEPARATION_NM} millas nauticas).
+     *
+     * @param point la posicion a verificar
+     * @return true si hay un vuelo activo demasiado cerca
+     */
+    private boolean isPositionOccupied(Position point) {
+        for (Flight f : game.getFlights()) {
+            if (f.getCurrentPosition().distanceTo(point) < SPAWN_SEPARATION_NM) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Busca un punto de spawn libre dentro de una ruta determinada.
+     * Baraja los puntos de la ruta y devuelve el primero que no tenga
+     * ningun vuelo activo cerca.
+     *
+     * @param route la ruta donde buscar
+     * @return una {@link Position} libre, o null si todos estan ocupados
+     */
+    private Position getFreeSpawnPoint(EntryRoute route) {
+        List<Position> shuffled = new ArrayList<>(route.getSpawnPoints());
+        Collections.shuffle(shuffled, random);
+        for (Position point : shuffled) {
+            if (!isPositionOccupied(point)) {
+                return point;
+            }
+        }
+        return null;
     }
 
     /**
