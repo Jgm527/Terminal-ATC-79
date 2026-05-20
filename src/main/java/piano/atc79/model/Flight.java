@@ -399,4 +399,59 @@ public class Flight {
         return correction;
     }
 
+    // ---------------------------------------------------------------
+    //  Persistencia (guardado / carga)
+    // ---------------------------------------------------------------
+
+    /**
+     * Indica si el vuelo esta actualmente en fase de entrada a un holding.
+     *
+     * @return true si el vuelo esta maniobrando para entrar en el patron de espera
+     */
+    public boolean isEnteringHolding() {
+        return enteringHolding;
+    }
+
+    /**
+     * Reconstruye un vuelo a partir de los datos persistidos en una partida guardada.
+     * <p>
+     * Crea un nuevo {@link Flight}, luego sobrescribe los valores por defecto
+     * del constructor con el estado exacto que tenia la partida en el momento
+     * del guardado.</p>
+     *
+     * @param data    los datos planos del vuelo desde el JSON
+     * @param airport el aeropuerto de la partida (para resolver referencias como pistas y puntos de espera)
+     * @return el {@link Flight} reconstruido, o null si no se pudo resolver el modelo
+     */
+    public static Flight reconstructFrom(SaveGameData.FlightData data, Airport airport) {
+        AircraftModel model = AircraftModelRegistry.get(data.getModelId());
+        if (model == null) {
+            return null;
+        }
+
+        Position pos = new Position(data.getX(), data.getY(), data.getZ());
+        Flight flight = new Flight(data.getCallsign(), model, pos, data.getHeading(), data.getSpeed());
+
+        // Acceso directo a campos privados (estamos dentro de la propia clase Flight)
+        flight.fuel = data.getFuel();
+        flight.status = FlightStatus.valueOf(data.getStatus());
+        flight.targetHeading = data.getTargetHeading();
+        flight.targetAltitude = data.getTargetAltitude();
+        flight.targetSpeed = data.getTargetSpeed();
+        flight.enteringHolding = data.isEnteringHolding();
+        flight.previousLandingDist = -1;
+
+        // Referencias a objetos dentro del aeropuerto (pueden ser null)
+        if (data.getAssignedRunwayId() != null && !data.getAssignedRunwayId().isEmpty()) {
+            flight.assignedRunway = airport.findRunway(data.getAssignedRunwayId());
+        }
+        if (data.getApproachType() != null && !data.getApproachType().isEmpty()) {
+            flight.approachType = data.getApproachType();
+        }
+        if (data.getHoldingPointId() != null && !data.getHoldingPointId().isEmpty()) {
+            flight.holdingPoint = airport.findHoldingPoint(data.getHoldingPointId());
+        }
+
+        return flight;
+    }
 }

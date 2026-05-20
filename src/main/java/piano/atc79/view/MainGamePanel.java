@@ -20,8 +20,10 @@ public class MainGamePanel extends JPanel {
     private JTextArea infoArea;
     private JTextArea errorLog;
     private JTextField commandInput;
+    private JButton saveButton;
     private Map<String, Color> messageColors;
     private Airport airport;
+    private Runnable onSaveCallback;
 
     /**
      * Construye la estructura y diseño del panel principal del juego.
@@ -49,12 +51,30 @@ public class MainGamePanel extends JPanel {
         // Añadir panel lateral
         this.add(createSidePanel(), BorderLayout.EAST);
 
-        // 4. Input de comandos (SUR)
+        // 4. Panel inferior: boton guardar + input de comandos
+        JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.setBackground(Color.BLACK);
+
+        saveButton = new JButton(" GUARDAR ");
+        saveButton.setFont(new Font("Monospaced", Font.BOLD, 13));
+        saveButton.setForeground(Color.BLACK);
+        saveButton.setBackground(new Color(0, 200, 80));
+        saveButton.setFocusPainted(false);
+        saveButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        saveButton.addActionListener(e -> {
+            if (onSaveCallback != null) {
+                onSaveCallback.run();
+            }
+        });
+        southPanel.add(saveButton, BorderLayout.WEST);
+
         commandInput = new JTextField();
         commandInput.setBackground(Color.BLACK);
         commandInput.setForeground(Color.GREEN);
         commandInput.setCaretColor(Color.GREEN);
-        this.add(commandInput, BorderLayout.SOUTH);
+        southPanel.add(commandInput, BorderLayout.CENTER);
+
+        this.add(southPanel, BorderLayout.SOUTH);
 
         initColorMap();
     }
@@ -154,5 +174,14 @@ public class MainGamePanel extends JPanel {
 
     public JTextField getCommandInput() {
         return commandInput;
+    }
+
+    /**
+     * Establece el callback que se ejecutara al pulsar el boton GUARDAR.
+     *
+     * @param callback accion a ejecutar (normalmente mostrar un dialogo de nombre)
+     */
+    public void setOnSaveCallback(Runnable callback) {
+        this.onSaveCallback = callback;
     }
 }

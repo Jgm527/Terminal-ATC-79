@@ -17,6 +17,7 @@ public class GameController {
     private FlightSpawner spawner;
     private Timer gameTimer;
     private WindowView view;
+    private Runnable onReturnToMenu;
 
     /**
      * Construye un GameController (Controlador de Juego) para una instancia especifica.
@@ -71,4 +72,48 @@ public class GameController {
 
     public List<Flight> getFlights() { return game.getFlights(); }
     public Airport getAirport() { return game.getAirport(); }
+
+    /**
+     * Guarda la partida actual con el nombre especificado y muestra feedback en el log.
+     *
+     * @param saveName nombre descriptivo para la partida
+     */
+    public void saveGame(String saveName) {
+        String result = game.saveGame(saveName);
+        view.getRadar().logTypedMessage(">>> PARTIDA GUARDADA: " + result, "SUCCESS");
+    }
+
+    /**
+     * Indica si la partida actual fue cargada desde un archivo existente.
+     * Si es true, al guardar se reutiliza el nombre sin preguntar.
+     */
+    public boolean hasExistingSave() {
+        return game.hasExistingSave();
+    }
+
+    /**
+     * Devuelve el nombre de la partida si fue cargada, o null si es nueva.
+     */
+    public String getCurrentSaveName() {
+        return game.getCurrentSaveName();
+    }
+
+    /**
+     * Establece el callback que se ejecuta al solicitar volver al menu principal.
+     */
+    public void setOnReturnToMenu(Runnable callback) {
+        this.onReturnToMenu = callback;
+    }
+
+    /**
+     * Cierra la partida y vuelve al menu principal.
+     */
+    public void quitToMenu() {
+        if (gameTimer != null) {
+            gameTimer.stop();
+        }
+        if (onReturnToMenu != null) {
+            onReturnToMenu.run();
+        }
+    }
 }

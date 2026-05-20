@@ -20,6 +20,10 @@ public class Game {
     private List<String> eventLog;
     private SeparationRules separationRules;
 
+    // Persistencia: seguimiento de la partida guardada
+    private String currentSaveName;
+    private String currentSaveFilePath;
+
     /**
      * Construye un nuevo Juego (Game) con un aeropuerto especificado.
      * Inicializa componentes como la puntuación y el analizador de comandos.
@@ -160,5 +164,62 @@ public class Game {
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    // ---------------------------------------------------------------
+    //  Persistencia — seguimiento de partida guardada
+    // ---------------------------------------------------------------
+
+    /**
+     * Indica si esta partida fue cargada desde un archivo existente.
+     * Si es true, al guardar se reutiliza el nombre y se elimina el archivo anterior.
+     */
+    public boolean hasExistingSave() {
+        return currentSaveFilePath != null;
+    }
+
+    public String getCurrentSaveName() {
+        return currentSaveName;
+    }
+
+    public void setCurrentSaveName(String saveName) {
+        this.currentSaveName = saveName;
+    }
+
+    public String getCurrentSaveFilePath() {
+        return currentSaveFilePath;
+    }
+
+    public void setCurrentSaveFilePath(String filePath) {
+        this.currentSaveFilePath = filePath;
+    }
+
+    /**
+     * Persiste el estado actual de la partida en un archivo JSON.
+     * <p>
+     * Si la partida fue cargada ({@link #hasExistingSave()}), sobreescribe
+     * el archivo anterior pero con un nuevo timestamp en el nombre. Si es
+     * una partida nueva, genera un archivo nuevo.</p>
+     *
+     * @param saveName nombre descriptivo que el jugador asigna a la partida
+     * @return el nombre del archivo generado (ej. "LEAL_20260520_121700.json")
+     */
+    public String saveGame(String saveName) {
+        try {
+            String oldPath = this.currentSaveFilePath;
+            this.currentSaveName = saveName;
+            String result = SaveManager.saveGame(this, saveName, oldPath);
+            // Actualizar la ruta al nuevo archivo (se devuelve la ruta completa)
+            this.currentSaveFilePath = new java.io.File(
+                    SaveManager.getSavesDir(), result
+            ).getAbsolutePath();
+            return result;
+        } catch (java.io.IOException e) {
+            return "Error al guardar: " + e.getMessage();
+        }
     }
 }

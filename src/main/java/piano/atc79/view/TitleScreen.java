@@ -1,11 +1,13 @@
 package piano.atc79.view;
 
+import piano.atc79.model.SaveManager;
+
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 /**
  * Pantalla de inicio del juego Terminal ATC-79.
@@ -30,8 +32,10 @@ public class TitleScreen extends JPanel {
     private static final Font INFO_FONT = new Font("Monospaced", Font.PLAIN, 12);
 
     private final AirportSelectionListener listener;
+    private final LoadGameListener loadGameListener;
     private JPanel cardsPanel;
     private JButton startButton;
+    private JButton loadButton;
     private AirportCard selectedCard;
 
     /**
@@ -47,12 +51,26 @@ public class TitleScreen extends JPanel {
     }
 
     /**
-     * Construye la pantalla de inicio con el listener de seleccion.
-     *
-     * @param listener el callback que recibira el codigo del aeropuerto seleccionado
+     * Interfaz de callback que se invoca cuando el jugador decide cargar una partida guardada.
      */
-    public TitleScreen(AirportSelectionListener listener) {
+    public interface LoadGameListener {
+        /**
+         * Notifica que se ha seleccionado un archivo de partida guardada para cargar.
+         *
+         * @param filePath la ruta completa al archivo .json de la partida
+         */
+        void onLoadGame(String filePath);
+    }
+
+    /**
+     * Construye la pantalla de inicio con los listeners de nueva partida y carga.
+     *
+     * @param listener         callback cuando el jugador inicia una partida nueva
+     * @param loadGameListener callback cuando el jugador carga una partida guardada
+     */
+    public TitleScreen(AirportSelectionListener listener, LoadGameListener loadGameListener) {
         this.listener = listener;
+        this.loadGameListener = loadGameListener;
         initializeUI();
     }
 
@@ -103,7 +121,7 @@ public class TitleScreen extends JPanel {
     }
 
     private JPanel createFooterPanel() {
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
         panel.setBackground(BACKGROUND_COLOR);
 
         startButton = new JButton("COMENZAR");
@@ -121,8 +139,64 @@ public class TitleScreen extends JPanel {
             }
         });
 
+        loadButton = new JButton("CARGAR PARTIDA");
+        loadButton.setFont(new Font("Monospaced", Font.BOLD, 16));
+        loadButton.setForeground(Color.BLACK);
+        loadButton.setBackground(new Color(100, 150, 255));
+        loadButton.setFocusPainted(false);
+        loadButton.setPreferredSize(new Dimension(220, 45));
+        loadButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loadButton.addActionListener(e -> showLoadDialog());
+
         panel.add(startButton);
+        panel.add(loadButton);
         return panel;
+    }
+
+    /**
+     * Muestra un dialogo con la lista de partidas guardadas disponibles.
+     * Al seleccionar una, dispara el callback de carga.
+     */
+    private void showLoadDialog() {
+        java.util.List<SaveManager.SaveMeta> saves = SaveManager.listSaves();
+        if (saves.isEmpty()) {
+            TerminalDialog.showInfoDialog(
+                    this,
+                    "CARGAR PARTIDA",
+                    "No hay partidas guardadas en el directorio 'saves/'."
+            );
+            return;
+        }
+
+        // Preparar datos para la lista
+        String[] items = new String[saves.size()];
+        for (int i = 0; i < saves.size(); i++) {
+            SaveManager.SaveMeta meta = saves.get(i);
+            String date = new java.text.SimpleDateFormat("dd/MM/yy HH:mm")
+                    .format(new java.util.Date(meta.getTimestamp()));
+            items[i] = String.format("%-20s  |  %-5s  |  %s",
+                    meta.getSaveName(), meta.getAirportCode(), date);
+        }
+
+        String selection = TerminalDialog.showLoadDialog(
+                this,
+                "CARGAR PARTIDA",
+                items
+        );
+
+        if (selection != null) {
+            for (int i = 0; i < saves.size(); i++) {
+                if (items[i].equals(selection)) {
+                    String filePath = new File(
+                            SaveManager.getSavesDir(), saves.get(i).getFileName()
+                    ).getAbsolutePath();
+                    if (loadGameListener != null) {
+                        loadGameListener.onLoadGame(filePath);
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     /**

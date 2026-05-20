@@ -57,6 +57,17 @@ public class FlightSpawner {
     }
 
     /**
+     * Suprime la rafaga inicial de vuelos.
+     * <p>
+     * Util cuando se carga una partida guardada que ya tiene vuelos activos,
+     * para evitar que aparezcan mas aviones de los esperados.</p>
+     */
+    public void suppressBurst() {
+        this.burstRemaining = 0;
+        this.burstQueueInitialized = true;
+    }
+
+    /**
      * Metodo principal invocado en cada tick del temporizador.
      * Gestiona la rafaga inicial escalonada y el spawn continuo de vuelos.
      */

@@ -39,6 +39,40 @@ public class WindowView {
             gameController.executeCommand(command);
             radar.getCommandInput().setText("");
         });
+
+        // Conectar boton GUARDAR con la confirmacion y vuelta al menu
+        radar.setOnSaveCallback(() -> {
+            String name;
+
+            // 1. Obtener nombre (partida cargada → reutilizar; nueva → preguntar)
+            if (gameController.hasExistingSave()) {
+                name = gameController.getCurrentSaveName();
+            } else {
+                name = TerminalDialog.showSaveDialog(
+                        window,
+                        "NOMBRAR PARTIDA",
+                        "Introduce un nombre para esta partida:"
+                );
+                if (name == null || name.trim().isEmpty()) {
+                    return;
+                }
+                name = name.trim();
+            }
+
+            // 2. Guardar la partida
+            gameController.saveGame(name);
+
+            // 3. Mostrar mensaje de exito
+            TerminalDialog.showInfoDialog(
+                    window,
+                    "PARTIDA GUARDADA",
+                    "Partida guardada correctamente."
+            );
+
+            // 4. Volver al menu principal
+            close();
+            gameController.quitToMenu();
+        });
     }
 
     /**
@@ -56,6 +90,13 @@ public class WindowView {
      */
     public void show() {
         window.setVisible(true);
+    }
+
+    /**
+     * Cierra la ventana del juego.
+     */
+    public void close() {
+        window.dispose();
     }
 
     public MainGamePanel getRadar() {

@@ -12,7 +12,8 @@ import java.awt.*;
  * Inicializa los componentes de la arquitectura MVC y comienza el juego.
  *
  * <p>El flujo de inicio ahora muestra una pantalla de titulo donde el jugador
- * selecciona el aeropuerto antes de comenzar la partida.</p>
+ * puede seleccionar un aeropuerto para empezar una partida nueva, o cargar
+ * una partida guardada desde el menu principal.</p>
  */
 public class Main {
 
@@ -35,10 +36,16 @@ public class Main {
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
 
-        TitleScreen titleScreen = new TitleScreen(airportCode -> {
-            frame.dispose();
-            startGame(airportCode);
-        });
+        TitleScreen titleScreen = new TitleScreen(
+                airportCode -> {
+                    frame.dispose();
+                    startGame(airportCode);
+                },
+                filePath -> {
+                    frame.dispose();
+                    loadGame(filePath);
+                }
+        );
 
         frame.add(titleScreen);
         frame.setVisible(true);
@@ -57,6 +64,7 @@ public class Main {
         FlightSpawner spawner = new FlightSpawner(game, profile);
 
         GameController controller = new GameController(game, spawner);
+        controller.setOnReturnToMenu(() -> SwingUtilities.invokeLater(Main::showTitleScreen));
 
         SwingUtilities.invokeLater(() -> {
             WindowView view = new WindowView(controller);
@@ -64,6 +72,40 @@ public class Main {
             view.show();
             controller.start();
         });
+    }
+
+    /**
+     * Carga una partida guardada desde un archivo JSON y reanuda el juego.
+     *
+     * @param filePath ruta completa al archivo .json de la partida guardada
+     */
+    private static void loadGame(String filePath) {
+        try {
+            Game game = SaveManager.loadGame(filePath);
+            String airportCode = game.getAirport().getId();
+
+            FlightSpawner spawner = new FlightSpawner(game, SpawnProfile.forAirport(airportCode));
+            spawner.suppressBurst();
+
+            GameController controller = new GameController(game, spawner);
+            controller.setOnReturnToMenu(() -> SwingUtilities.invokeLater(Main::showTitleScreen));
+
+            SwingUtilities.invokeLater(() -> {
+                WindowView view = new WindowView(controller);
+                controller.setView(view);
+                view.show();
+                controller.start();
+            });
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Error al cargar la partida: " + e.getMessage(),
+                    "Error de carga",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            // Si falla la carga, volver a la pantalla de titulo
+            SwingUtilities.invokeLater(Main::showTitleScreen);
+        }
     }
 
     /**

@@ -44,4 +44,9 @@ public class Score {
         this.successfulTakesOff++;
         this.totalPoints += points;
     }
+
+    // Setters para reconstruccion desde guardado
+    public void setTotalPoints(int totalPoints) { this.totalPoints = totalPoints; }
+    public void setSuccessfulLandings(int successfulLandings) { this.successfulLandings = successfulLandings; }
+    public void setSuccessfulTakesOff(int successfulTakesOff) { this.successfulTakesOff = successfulTakesOff; }
 }
