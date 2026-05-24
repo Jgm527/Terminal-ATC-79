@@ -209,8 +209,10 @@ public class MainGamePanel extends JPanel {
      *
      * @param totalPoints puntos totales acumulados
      * @param landings    número de aterrizajes exitosos
+     * @param streakLevel nivel de racha actual (0 si no hay)
      */
-    public void updateScore(int totalPoints, int landings) {
-        scoreArea.setText(String.format("SCORE: %,d  |  Landings: %d", totalPoints, landings));
+    public void updateScore(int totalPoints, int landings, int streakLevel) {
+        String text = String.format("SCORE: %,d  |  Landings: %d  |  Streak: ×%d", totalPoints, landings, streakLevel);
+        scoreArea.setText(text);
     }
 }

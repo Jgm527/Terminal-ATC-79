@@ -54,6 +54,7 @@ public class Game {
         radioTemplates.put("EVT_TCAS", "TCAS: Alerta de proximidad entre %s y %s.");
         radioTemplates.put("EVT_COLLISION", "COLISIÓN: Impacto frontal entre %s y %s.");
         radioTemplates.put("EVT_FUEL", "EMERGENCIA: %s con combustible crítico.");
+        radioTemplates.put("EVT_STREAK", ">>> RACHA ×%d  |  +%,d pts");
     }
 
     public String getTemplate(String key) {
@@ -84,8 +85,11 @@ public class Game {
             if (f.getStatus().equals(FlightStatus.LANDING)) {
                 if (f.getSpeed() <= 0 && f.getCurrentPosition().getZ() <= 5) {
                     int pts = (int) (100 * airport.getDifficultyMultiplier());
-                    score.addLanding(pts);
+                    int streakBonus = score.addLanding(pts);
                     addEvent("EVT_LANDED", f.getCallsign(), pts);
+                    if (streakBonus > 0) {
+                        addEvent("EVT_STREAK", score.getStreakLevel(), streakBonus);
+                    }
                     flights.remove(i);
                     continue;
                 }
@@ -98,6 +102,7 @@ public class Game {
             if (f.getFuel() < 20) {
                 if (Math.random() < 0.05) {
                     addEvent("EVT_FUEL", f.getCallsign());
+                    score.resetStreak();
                 }
             }
         }
@@ -120,6 +125,7 @@ public class Game {
 
                 if (separationRules.areInCollision(f, f2)) {
                     addEvent("EVT_COLLISION", f.getCallsign(), f2.getCallsign());
+                    score.resetStreak();
                     gameOver = true;
                     return;
                 }

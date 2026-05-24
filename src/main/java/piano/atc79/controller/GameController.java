@@ -45,7 +45,8 @@ public class GameController {
 
                 view.getRadar().updateScore(
                     game.getScore().getTotalPoints(),
-                    game.getScore().getSuccessfulLandings()
+                    game.getScore().getSuccessfulLandings(),
+                    game.getScore().getStreakLevel()
                 );
 
                 for (String event : game.pullEvents()) {
