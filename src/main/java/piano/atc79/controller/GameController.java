@@ -43,6 +43,11 @@ public class GameController {
                 spawner.tick();
                 game.update();
 
+                view.getRadar().updateScore(
+                    game.getScore().getTotalPoints(),
+                    game.getScore().getSuccessfulLandings()
+                );
+
                 for (String event : game.pullEvents()) {
                     view.getRadar().logTypedMessage(event, "INFO");
                 }

@@ -24,6 +24,7 @@ public class MainGamePanel extends JPanel {
     private Map<String, Color> messageColors;
     private Airport airport;
     private Runnable onSaveCallback;
+    private JTextArea scoreArea;
 
     /**
      * Construye la estructura y diseño del panel principal del juego.
@@ -36,13 +37,26 @@ public class MainGamePanel extends JPanel {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
 
-        // Añadir Area de cabecera
+        // Añadir cabecera superior con dos líneas: info aeropuerto + score
+        JPanel northPanel = new JPanel(new GridLayout(2, 1));
+        northPanel.setBackground(Color.BLACK);
+
         headerArea = new JTextArea();
         headerArea.setBackground(Color.BLACK);
         headerArea.setForeground(Color.WHITE);
         headerArea.setEditable(false);
         headerArea.setText(getHeaderString());
-        this.add(headerArea, BorderLayout.NORTH);
+        northPanel.add(headerArea);
+
+        scoreArea = new JTextArea();
+        scoreArea.setBackground(Color.BLACK);
+        scoreArea.setForeground(new Color(0, 200, 80));
+        scoreArea.setEditable(false);
+        scoreArea.setFont(new Font("Monospaced", Font.BOLD, 13));
+        scoreArea.setText("SCORE: 0  |  Landings: 0");
+        northPanel.add(scoreArea);
+
+        this.add(northPanel, BorderLayout.NORTH);
 
         // 2. Radar Real (CENTRO) - Ahora es un componente separado
         canvas = new RadarCanvas(airport, flights);
@@ -80,27 +94,32 @@ public class MainGamePanel extends JPanel {
     }
 
     private JPanel createSidePanel() {
-        JPanel sidePanel = new JPanel();
-        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        JPanel sidePanel = new JPanel(new GridLayout(2, 1));
         sidePanel.setPreferredSize(new Dimension(400, 0));
         sidePanel.setBackground(Color.BLACK);
 
         infoArea = createCustomTextArea();
         errorLog = createCustomTextArea();
 
-        // Añadir Area de info de aviones
+        // Panel superior: info de vuelos
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(Color.BLACK);
         JLabel dataLabel = new JLabel("INFORMACION DE VUELOS");
         dataLabel.setBackground(Color.BLACK);
         dataLabel.setForeground(Color.WHITE);
-        sidePanel.add(dataLabel);
-        sidePanel.add(new JScrollPane(infoArea));
+        topPanel.add(dataLabel, BorderLayout.NORTH);
+        topPanel.add(new JScrollPane(infoArea), BorderLayout.CENTER);
+        sidePanel.add(topPanel);
 
-        // Añadir Area de avisos y eventos
+        // Panel inferior: logs del sistema
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(Color.BLACK);
         JLabel errorLabel = new JLabel("LOGS DEL SISTEMA");
         errorLabel.setBackground(Color.BLACK);
         errorLabel.setForeground(Color.WHITE);
-        sidePanel.add(errorLabel);
-        sidePanel.add(new JScrollPane(errorLog));
+        bottomPanel.add(errorLabel, BorderLayout.NORTH);
+        bottomPanel.add(new JScrollPane(errorLog), BorderLayout.CENTER);
+        sidePanel.add(bottomPanel);
 
         return sidePanel;
     }
@@ -183,5 +202,15 @@ public class MainGamePanel extends JPanel {
      */
     public void setOnSaveCallback(Runnable callback) {
         this.onSaveCallback = callback;
+    }
+
+    /**
+     * Actualiza la línea de score en la cabecera superior.
+     *
+     * @param totalPoints puntos totales acumulados
+     * @param landings    número de aterrizajes exitosos
+     */
+    public void updateScore(int totalPoints, int landings) {
+        scoreArea.setText(String.format("SCORE: %,d  |  Landings: %d", totalPoints, landings));
     }
 }

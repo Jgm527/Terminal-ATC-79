@@ -50,7 +50,7 @@ public class Game {
         radioTemplates.put("CMD_CLRVIS", "%s, autorizado a aproximación VISUAL en la pista %s");
         radioTemplates.put("CMD_CLRILS", "%s, autorizado a aproximación ILS en la pista %s");
 
-        radioTemplates.put("EVT_LANDED", ">>> %s ha aterrizado con éxito");
+        radioTemplates.put("EVT_LANDED", ">>> %s ha aterrizado — +%d pts");
         radioTemplates.put("EVT_TCAS", "TCAS: Alerta de proximidad entre %s y %s.");
         radioTemplates.put("EVT_COLLISION", "COLISIÓN: Impacto frontal entre %s y %s.");
         radioTemplates.put("EVT_FUEL", "EMERGENCIA: %s con combustible crítico.");
@@ -83,7 +83,9 @@ public class Game {
 
             if (f.getStatus().equals(FlightStatus.LANDING)) {
                 if (f.getSpeed() <= 0 && f.getCurrentPosition().getZ() <= 5) {
-                    addEvent("EVT_LANDED", f.getCallsign());
+                    int pts = (int) (100 * airport.getDifficultyMultiplier());
+                    score.addLanding(pts);
+                    addEvent("EVT_LANDED", f.getCallsign(), pts);
                     flights.remove(i);
                     continue;
                 }
