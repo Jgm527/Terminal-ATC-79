@@ -40,3 +40,9 @@ build/
 
 ### Carpeta de guardado ###
 ./saves
+
+### Variables de entorno ###
+.env
+
+### Archivo de sesion ###
+last_player.txt

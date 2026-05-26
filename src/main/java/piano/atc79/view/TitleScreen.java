@@ -33,10 +33,12 @@ public class TitleScreen extends JPanel {
 
     private final AirportSelectionListener listener;
     private final LoadGameListener loadGameListener;
+    private final Runnable onLogout;
     private JPanel cardsPanel;
     private JButton startButton;
     private JButton loadButton;
     private AirportCard selectedCard;
+    private String playerAlias;
 
     /**
      * Interfaz de callback que se invoca cuando el jugador confirma la seleccion de un aeropuerto.
@@ -65,12 +67,17 @@ public class TitleScreen extends JPanel {
     /**
      * Construye la pantalla de inicio con los listeners de nueva partida y carga.
      *
+     * @param playerAlias      alias del jugador logueado
      * @param listener         callback cuando el jugador inicia una partida nueva
      * @param loadGameListener callback cuando el jugador carga una partida guardada
+     * @param onLogout         callback cuando el jugador pulsa CERRAR SESION
      */
-    public TitleScreen(AirportSelectionListener listener, LoadGameListener loadGameListener) {
+    public TitleScreen(String playerAlias, AirportSelectionListener listener,
+                       LoadGameListener loadGameListener, Runnable onLogout) {
+        this.playerAlias = playerAlias;
         this.listener = listener;
         this.loadGameListener = loadGameListener;
+        this.onLogout = onLogout;
         initializeUI();
     }
 
@@ -121,8 +128,52 @@ public class TitleScreen extends JPanel {
     }
 
     private JPanel createFooterPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(BACKGROUND_COLOR);
+
+        // Alias del jugador a la izquierda, clickeable
+        JLabel aliasLabel = new JLabel("  " + playerAlias + "  ");
+        aliasLabel.setFont(new Font("Monospaced", Font.BOLD, 13));
+        aliasLabel.setForeground(new Color(0, 200, 80));
+        aliasLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        aliasLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        // Popup al hacer click sobre el alias
+        JPopupMenu aliasPopup = new JPopupMenu();
+        aliasPopup.setBackground(new Color(40, 40, 40));
+        JMenuItem logoutItem = new JMenuItem("CERRAR SESION");
+        logoutItem.setFont(new Font("Monospaced", Font.BOLD, 12));
+        logoutItem.setForeground(Color.WHITE);
+        logoutItem.setBackground(new Color(40, 40, 40));
+        logoutItem.addActionListener(e -> {
+            if (onLogout != null) {
+                onLogout.run();
+            }
+        });
+        aliasPopup.add(logoutItem);
+
+        aliasLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                aliasPopup.show(aliasLabel, 0, aliasLabel.getHeight());
+            }
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                aliasLabel.setForeground(new Color(100, 255, 160));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                aliasLabel.setForeground(new Color(0, 200, 80));
+            }
+        });
+
+        panel.add(aliasLabel, BorderLayout.WEST);
+
+        // Botones centrales
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        buttonPanel.setBackground(BACKGROUND_COLOR);
 
         startButton = new JButton("COMENZAR");
         startButton.setFont(new Font("Monospaced", Font.BOLD, 18));
@@ -148,8 +199,10 @@ public class TitleScreen extends JPanel {
         loadButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         loadButton.addActionListener(e -> showLoadDialog());
 
-        panel.add(startButton);
-        panel.add(loadButton);
+        buttonPanel.add(startButton);
+        buttonPanel.add(loadButton);
+
+        panel.add(buttonPanel, BorderLayout.EAST);
         return panel;
     }
 

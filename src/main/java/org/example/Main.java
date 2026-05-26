@@ -2,6 +2,9 @@ package org.example;
 
 import piano.atc79.model.*;
 import piano.atc79.controller.*;
+import piano.atc79.persistence.DAO;
+import piano.atc79.persistence.PostgresDAO;
+import piano.atc79.util.SessionManager;
 import piano.atc79.view.*;
 
 import javax.swing.*;
@@ -9,25 +12,57 @@ import java.awt.*;
 
 /**
  * Punto de entrada principal para la aplicacion Terminal ATC 79.
- * Inicializa los componentes de la arquitectura MVC y comienza el juego.
- *
- * <p>El flujo de inicio ahora muestra una pantalla de titulo donde el jugador
- * puede seleccionar un aeropuerto para empezar una partida nueva, o cargar
- * una partida guardada desde el menu principal.</p>
+ * <p>
+ * Flujo de inicio:
+ * <ol>
+ *   <li>Conectar a la base de datos</li>
+ *   <li>Comprobar si hay sesion persistente (last_player.txt)</li>
+ *   <li>Si no hay sesion, mostrar LoginDialog</li>
+ *   <li>Mostrar pantalla de titulo con el alias del jugador</li>
+ * </ol>
  */
 public class Main {
 
+    /** Alias del jugador activo en esta sesion. */
+    private static String currentAlias;
+
+    /** DAO para acceso a base de datos. */
+    private static final DAO dao = new PostgresDAO();
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Main::startLoginFlow);
+    }
+
     /**
-     * Inicializa la aplicacion mostrando la pantalla de titulo para la seleccion
-     * del aeropuerto, y posteriormente lanza el juego con la eleccion del jugador.
+     * Inicia el flujo de login: sesion persistente o dialogo de login.
      */
-    static void main() {
-        SwingUtilities.invokeLater(Main::showTitleScreen);
+    private static void startLoginFlow() {
+        String savedAlias = SessionManager.loadSession();
+        if (savedAlias != null) {
+            currentAlias = savedAlias;
+            showTitleScreen();
+        } else {
+            showLoginDialog();
+        }
+    }
+
+    /**
+     * Muestra el dialogo de inicio de sesion.
+     */
+    private static void showLoginDialog() {
+        JDialog dialog = new LoginDialog(null);
+        dialog.setVisible(true);
+
+        if (dialog instanceof LoginDialog && ((LoginDialog) dialog).isSucceeded()) {
+            currentAlias = SessionManager.loadSession();
+            showTitleScreen();
+        } else {
+            System.exit(0);
+        }
     }
 
     /**
      * Muestra la pantalla de titulo con la rejilla de aeropuertos disponibles.
-     * Cuando el jugador selecciona uno, se cierra el menu y se inicia el juego.
      */
     private static void showTitleScreen() {
         JFrame frame = new JFrame("Terminal ATC 79");
@@ -37,6 +72,7 @@ public class Main {
         frame.setResizable(false);
 
         TitleScreen titleScreen = new TitleScreen(
+                currentAlias,
                 airportCode -> {
                     frame.dispose();
                     startGame(airportCode);
@@ -44,6 +80,12 @@ public class Main {
                 filePath -> {
                     frame.dispose();
                     loadGame(filePath);
+                },
+                () -> {
+                    frame.dispose();
+                    SessionManager.clearSession();
+                    currentAlias = null;
+                    showLoginDialog();
                 }
         );
 
@@ -53,8 +95,6 @@ public class Main {
 
     /**
      * Inicia el juego con el aeropuerto seleccionado por el jugador.
-     *
-     * @param airportCode el codigo ICAO del aeropuerto elegido
      */
     private static void startGame(String airportCode) {
         Airport airport = createAirportFromCode(airportCode);
@@ -76,8 +116,6 @@ public class Main {
 
     /**
      * Carga una partida guardada desde un archivo JSON y reanuda el juego.
-     *
-     * @param filePath ruta completa al archivo .json de la partida guardada
      */
     private static void loadGame(String filePath) {
         try {
@@ -103,19 +141,24 @@ public class Main {
                     "Error de carga",
                     JOptionPane.ERROR_MESSAGE
             );
-            // Si falla la carga, volver a la pantalla de titulo
             SwingUtilities.invokeLater(Main::showTitleScreen);
         }
     }
 
     /**
-     * Fabrica el aeropuerto correspondiente al codigo ICAO seleccionado.
+     * Carga un aeropuerto desde la base de datos o, si falla, desde la fabrica.
      *
      * @param code el codigo ICAO (ej. "LEAL", "LEBL", etc.)
      * @return el {@link Airport} configurado
-     * @throws IllegalArgumentException si el codigo no corresponde a ningun aeropuerto
      */
     private static Airport createAirportFromCode(String code) {
+        Airport airport = dao.loadAirport(code);
+        if (airport != null) {
+            System.out.println(">>> Aeropuerto " + code + " cargado desde BD");
+            return airport;
+        }
+        // Fallback a AirportFactory si la BD no esta disponible
+        System.out.println(">>> Aeropuerto " + code + " cargado desde AirportFactory (fallback)");
         return switch (code) {
             case "LEAL" -> AirportFactory.createLEAL();
             case "LEBL" -> AirportFactory.createLEBL();
