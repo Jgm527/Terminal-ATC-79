@@ -216,6 +216,7 @@ public class PostgresDAO implements DAO {
     @Override
     public List<LeaderboardEntry> getLeaderboard(String airportCode, int limit) {
         String sql = "SELECT p.alias, g.score_total, g.successful_landings, " +
+                "g.streak_max, g.duration_seconds, " +
                 "g.game_over_cause, g.completed_at " +
                 "FROM game_sessions g " +
                 "JOIN players p ON p.player_id = g.player_id " +
@@ -232,6 +233,8 @@ public class PostgresDAO implements DAO {
                             resultado.getString("alias"),
                             resultado.getInt("score_total"),
                             resultado.getInt("successful_landings"),
+                            resultado.getInt("streak_max"),
+                            resultado.getInt("duration_seconds"),
                             resultado.getString("game_over_cause"),
                             resultado.getTimestamp("completed_at") != null
                                     ? resultado.getTimestamp("completed_at").toString()

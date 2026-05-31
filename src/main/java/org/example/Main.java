@@ -79,6 +79,7 @@ public class Main {
 
         TitleScreen titleScreen = new TitleScreen(
                 currentAlias,
+                dao,
                 airportCode -> {
                     frame.dispose();
                     startGame(airportCode);

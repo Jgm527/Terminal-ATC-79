@@ -1,6 +1,7 @@
 package piano.atc79.view;
 
 import piano.atc79.model.SaveManager;
+import piano.atc79.persistence.DAO;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -39,6 +40,7 @@ public class TitleScreen extends JPanel {
     private JButton loadButton;
     private AirportCard selectedCard;
     private String playerAlias;
+    private final DAO dao;
 
     /**
      * Interfaz de callback que se invoca cuando el jugador confirma la seleccion de un aeropuerto.
@@ -72,9 +74,10 @@ public class TitleScreen extends JPanel {
      * @param loadGameListener callback cuando el jugador carga una partida guardada
      * @param onLogout         callback cuando el jugador pulsa CERRAR SESION
      */
-    public TitleScreen(String playerAlias, AirportSelectionListener listener,
+    public TitleScreen(String playerAlias, DAO dao, AirportSelectionListener listener,
                        LoadGameListener loadGameListener, Runnable onLogout) {
         this.playerAlias = playerAlias;
+        this.dao = dao;
         this.listener = listener;
         this.loadGameListener = loadGameListener;
         this.onLogout = onLogout;
@@ -201,6 +204,22 @@ public class TitleScreen extends JPanel {
 
         buttonPanel.add(startButton);
         buttonPanel.add(loadButton);
+
+        JButton leaderboardBtn = new JButton("CLASIFICACION");
+        leaderboardBtn.setFont(new Font("Monospaced", Font.BOLD, 16));
+        leaderboardBtn.setForeground(Color.BLACK);
+        leaderboardBtn.setBackground(new Color(255, 200, 0));
+        leaderboardBtn.setFocusPainted(false);
+        leaderboardBtn.setPreferredSize(new Dimension(230, 45));
+        leaderboardBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        leaderboardBtn.addActionListener(e -> {
+            String airportCode = (selectedCard != null)
+                    ? selectedCard.getInfo().code
+                    : "LEAL";
+            Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
+            LeaderboardPanel.showDialog(owner, dao, airportCode, playerAlias);
+        });
+        buttonPanel.add(leaderboardBtn);
 
         panel.add(buttonPanel, BorderLayout.EAST);
         return panel;
