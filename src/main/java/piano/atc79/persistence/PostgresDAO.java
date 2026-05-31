@@ -87,6 +87,21 @@ public class PostgresDAO implements DAO {
         }
     }
 
+    @Override
+    public Integer getPlayerIdByAlias(String alias) {
+        String sql = "SELECT player_id FROM players WHERE alias = ?";
+        try (Connection conexion = DriverManager.getConnection(url, user, password);
+             PreparedStatement sentencia = conexion.prepareStatement(sql)) {
+            sentencia.setString(1, alias);
+            try (ResultSet resultado = sentencia.executeQuery()) {
+                return resultado.next() ? resultado.getInt("player_id") : null;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener playerId por alias: " + e.getMessage());
+            return null;
+        }
+    }
+
     // ========================================================================
     //  AEROPUERTOS
     // ========================================================================

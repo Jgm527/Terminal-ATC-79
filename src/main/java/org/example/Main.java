@@ -26,6 +26,9 @@ public class Main {
     /** Alias del jugador activo en esta sesion. */
     private static String currentAlias;
 
+    /** ID del jugador activo en esta sesion. */
+    private static int playerId;
+
     /** DAO para acceso a base de datos. */
     private static final DAO dao = new PostgresDAO();
 
@@ -40,6 +43,8 @@ public class Main {
         String savedAlias = SessionManager.loadSession();
         if (savedAlias != null) {
             currentAlias = savedAlias;
+            Integer id = dao.getPlayerIdByAlias(savedAlias);
+            playerId = id != null ? id : -1;
             showTitleScreen();
         } else {
             showLoginDialog();
@@ -50,11 +55,12 @@ public class Main {
      * Muestra el dialogo de inicio de sesion.
      */
     private static void showLoginDialog() {
-        JDialog dialog = new LoginDialog(null);
+        JDialog dialog = new LoginDialog(null, dao);
         dialog.setVisible(true);
 
         if (dialog instanceof LoginDialog && ((LoginDialog) dialog).isSucceeded()) {
             currentAlias = SessionManager.loadSession();
+            playerId = ((LoginDialog) dialog).getPlayerId();
             showTitleScreen();
         } else {
             System.exit(0);
@@ -103,7 +109,7 @@ public class Main {
         SpawnProfile profile = SpawnProfile.forAirport(airportCode);
         FlightSpawner spawner = new FlightSpawner(game, profile);
 
-        GameController controller = new GameController(game, spawner);
+        GameController controller = new GameController(game, spawner, dao, playerId);
         controller.setOnReturnToMenu(() -> SwingUtilities.invokeLater(Main::showTitleScreen));
 
         SwingUtilities.invokeLater(() -> {
@@ -125,7 +131,7 @@ public class Main {
             FlightSpawner spawner = new FlightSpawner(game, SpawnProfile.forAirport(airportCode));
             spawner.suppressBurst();
 
-            GameController controller = new GameController(game, spawner);
+            GameController controller = new GameController(game, spawner, dao, playerId);
             controller.setOnReturnToMenu(() -> SwingUtilities.invokeLater(Main::showTitleScreen));
 
             SwingUtilities.invokeLater(() -> {

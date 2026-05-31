@@ -1,6 +1,8 @@
 package piano.atc79.controller;
 
 import piano.atc79.model.*;
+import piano.atc79.persistence.DAO;
+import piano.atc79.view.GameOverPanel;
 import piano.atc79.view.WindowView;
 
 import java.util.List;
@@ -18,16 +20,22 @@ public class GameController {
     private Timer gameTimer;
     private WindowView view;
     private Runnable onReturnToMenu;
+    private final DAO dao;
+    private final int playerId;
 
     /**
      * Construye un GameController (Controlador de Juego) para una instancia especifica.
      *
      * @param game    el modelo {@link Game} con la logica de negocio
      * @param spawner el generador de trafico {@link FlightSpawner}
+     * @param dao     el DAO para persistencia en base de datos
+     * @param playerId el ID del jugador logueado
      */
-    public GameController(Game game, FlightSpawner spawner) {
+    public GameController(Game game, FlightSpawner spawner, DAO dao, int playerId) {
         this.game = game;
         this.spawner = spawner;
+        this.dao = dao;
+        this.playerId = playerId;
     }
 
     public void setView(WindowView view) {
@@ -55,8 +63,28 @@ public class GameController {
 
                 view.updateView(game.getFlights());
             } else {
-                view.getRadar().logTypedMessage("OPERACIONES SUSPENDIDAS - GAME OVER", "SYSTEM");
+                // Recolectar estadisticas de la partida
+                Score s = game.getScore();
+                String airportCode = game.getAirport().getId();
+                int score = s.getTotalPoints();
+                int landings = s.getSuccessfulLandings();
+                int streakMax = s.getMaxConsecutiveLandings();
+                int duration = game.getTickCount();
+                String cause = game.getGameOverCause() != null ? game.getGameOverCause() : "UNKNOWN";
+
+                // Borrar archivo de guardado local si existe
+                SaveManager.deleteSave(game.getCurrentSaveFilePath());
+
+                // Guardar en base de datos
+                dao.saveGameSession(playerId, airportCode, score, landings, streakMax, duration, cause);
+
+                // Parar el timer
                 gameTimer.stop();
+
+                // Mostrar pantalla de fin de partida
+                JFrame gameWindow = view.getWindow();
+                GameOverPanel.showDialog(gameWindow, airportCode, score, landings,
+                        streakMax, duration, cause, this::quitToMenu);
             }
         });
         gameTimer.start();
@@ -118,8 +146,11 @@ public class GameController {
         if (gameTimer != null) {
             gameTimer.stop();
         }
+        if (view != null) {
+            view.close();
+        }
         if (onReturnToMenu != null) {
             onReturnToMenu.run();
         }
     }
-}
+}

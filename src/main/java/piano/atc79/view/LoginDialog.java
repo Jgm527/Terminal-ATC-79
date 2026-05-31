@@ -23,15 +23,17 @@ public class LoginDialog extends JDialog {
     private final JLabel errorLabel;
     private final DAO dao;
     private boolean succeeded;
+    private int playerIdField;
 
     /**
      * Crea el dialogo de login.
      *
      * @param owner la ventana padre (puede ser null)
+     * @param dao   el DAO para acceso a base de datos
      */
-    public LoginDialog(Frame owner) {
+    public LoginDialog(Frame owner, DAO dao) {
         super(owner, "INICIAR SESION — Terminal ATC-79", true);
-        this.dao = new PostgresDAO();
+        this.dao = dao;
 
         setSize(400, 280);
         setLocationRelativeTo(owner);
@@ -149,6 +151,7 @@ public class LoginDialog extends JDialog {
         Integer playerId = dao.loginPlayer(alias, hash);
         if (playerId != null) {
             // Login exitoso
+            this.playerIdField = playerId;
             SessionManager.saveSession(alias);
             succeeded = true;
             dispose();
@@ -156,10 +159,10 @@ public class LoginDialog extends JDialog {
         }
 
         // Podria ser que el alias exista pero la contrasena sea incorrecta
-        // Lo comprobamos: si login fallo y crear nuevo jugador falla (unique),
-        // entonces la contrasena era incorrecta
         if (dao.createPlayer(alias, hash)) {
-            // Nuevo jugador creado
+            // Nuevo jugador creado → obtener su ID
+            Integer newId = dao.loginPlayer(alias, hash);
+            this.playerIdField = newId != null ? newId : -1;
             SessionManager.saveSession(alias);
             succeeded = true;
             dispose();
@@ -178,5 +181,9 @@ public class LoginDialog extends JDialog {
      */
     public boolean isSucceeded() {
         return succeeded;
+    }
+
+    public int getPlayerId() {
+        return playerIdField;
     }
 }

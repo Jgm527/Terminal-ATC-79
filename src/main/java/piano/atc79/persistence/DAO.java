@@ -42,6 +42,14 @@ public interface DAO {
      */
     String getAlias(int playerId);
 
+    /**
+     * Devuelve el ID de un jugador por su alias.
+     *
+     * @param alias el nombre del jugador
+     * @return el player_id, o null si no existe
+     */
+    Integer getPlayerIdByAlias(String alias);
+
     // ========== AEROPUERTOS ==========
 
     /**

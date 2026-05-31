@@ -99,6 +99,10 @@ public class WindowView {
         window.dispose();
     }
 
+    public JFrame getWindow() {
+        return window;
+    }
+
     public MainGamePanel getRadar() {
         return radar;
     }

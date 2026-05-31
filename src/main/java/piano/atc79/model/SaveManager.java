@@ -229,6 +229,19 @@ public final class SaveManager {
         return metaList;
     }
 
+    /**
+     * Elimina un archivo de partida guardada, si existe.
+     *
+     * @param filePath ruta al archivo .json a eliminar, o null (no hace nada)
+     */
+    public static void deleteSave(String filePath) {
+        if (filePath == null) return;
+        File file = new File(filePath);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
     // ---------------------------------------------------------------
     //  Utilidades
     // ---------------------------------------------------------------

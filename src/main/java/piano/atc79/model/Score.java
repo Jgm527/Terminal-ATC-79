@@ -10,6 +10,7 @@ public class Score {
     private int successfulTakesOff;
     private int consecutiveLandings;
     private int streakLevel;
+    private int maxConsecutiveLandings;
 
     /**
      * Inicializa un nuevo objeto Score (Puntuación) con cero puntos, cero operaciones
@@ -21,6 +22,7 @@ public class Score {
         successfulTakesOff = 0;
         consecutiveLandings = 0;
         streakLevel = 0;
+        maxConsecutiveLandings = 0;
     }
 
     public int getTotalPoints() {
@@ -47,6 +49,9 @@ public class Score {
         this.successfulLandings++;
         this.totalPoints += basePoints;
         consecutiveLandings++;
+        if (consecutiveLandings > maxConsecutiveLandings) {
+            maxConsecutiveLandings = consecutiveLandings;
+        }
 
         if (consecutiveLandings % 5 == 0) {
             streakLevel = consecutiveLandings / 5;
@@ -71,6 +76,10 @@ public class Score {
 
     public int getConsecutiveLandings() {
         return consecutiveLandings;
+    }
+
+    public int getMaxConsecutiveLandings() {
+        return maxConsecutiveLandings;
     }
 
     public void addTakeOff(int points) {

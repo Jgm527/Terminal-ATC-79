@@ -19,6 +19,8 @@ public class Game {
     private Map<String, String> radioTemplates;
     private List<String> eventLog;
     private SeparationRules separationRules;
+    private int tickCount;
+    private String gameOverCause;
 
     // Persistencia: seguimiento de la partida guardada
     private String currentSaveName;
@@ -38,6 +40,8 @@ public class Game {
         this.gameOver = false;
         this.eventLog = new ArrayList<>();
         this.separationRules = new SeparationRules();
+        this.tickCount = 0;
+        this.gameOverCause = null;
         initRadioTemplates();
     }
 
@@ -77,6 +81,7 @@ public class Game {
      * evalúa condiciones de aterrizaje y genera alertas si es necesario.
      */
     public void update() {
+        tickCount++;
         for (int i = flights.size() - 1; i >= 0; i--) {
             Flight f = flights.get(i);
             f.updatePosition();
@@ -126,6 +131,7 @@ public class Game {
                 if (separationRules.areInCollision(f, f2)) {
                     addEvent("EVT_COLLISION", f.getCallsign(), f2.getCallsign());
                     score.resetStreak();
+                    gameOverCause = "COLLISION";
                     gameOver = true;
                     return;
                 }
@@ -136,7 +142,9 @@ public class Game {
             }
 
             if (f.getFuel() <= 0) {
+                gameOverCause = "FUEL_EXHAUSTION";
                 gameOver = true;
+                return;
             }
         }
     }
@@ -176,6 +184,14 @@ public class Game {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
+    }
+
+    public int getTickCount() {
+        return tickCount;
+    }
+
+    public String getGameOverCause() {
+        return gameOverCause;
     }
 
     // ---------------------------------------------------------------
