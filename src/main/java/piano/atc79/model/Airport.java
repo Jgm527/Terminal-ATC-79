@@ -15,6 +15,7 @@ public class Airport {
     private List<EntryRoute> entryRoutes;
     private int minimumVectoringAltitude;
     private double difficultyMultiplier;
+    private double goAroundChance;
 
     /**
      * Construye un nuevo Aeropuerto.
@@ -28,6 +29,7 @@ public class Airport {
         this.name = name;
         this.minimumVectoringAltitude = minimumVectoringAltitude;
         this.difficultyMultiplier = 1.0;
+        this.goAroundChance = 0.05;
         runways = new ArrayList<>();
         holdingPoints = new ArrayList<>();
         entryRoutes = new ArrayList<>();
@@ -55,6 +57,14 @@ public class Airport {
 
     public void setDifficultyMultiplier(double multiplier) {
         this.difficultyMultiplier = multiplier;
+    }
+
+    public double getGoAroundChance() {
+        return goAroundChance;
+    }
+
+    public void setGoAroundChance(double chance) {
+        this.goAroundChance = chance;
     }
 
     public List<HoldingPoint> getHoldingPoints() {

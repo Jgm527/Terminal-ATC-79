@@ -20,6 +20,7 @@ public final class AirportFactory {
     public static Airport createLEAL() {
         Airport airport = new Airport("LEAL", "Alicante-Elche", 2000);
         airport.setDifficultyMultiplier(1.0);
+        airport.setGoAroundChance(0.01);
 
         Position start10 = new Position(0, 0, 0);
         Position end10 = new Position(1.6, 0.5, 0);
@@ -45,6 +46,7 @@ public final class AirportFactory {
     public static Airport createLEBL() {
         Airport airport = new Airport("LEBL", "Barcelona-El Prat", 2500);
         airport.setDifficultyMultiplier(1.3);
+        airport.setGoAroundChance(0.02);
 
         Position start07L = new Position(-0.8, -1.2, 0);
         Position end25R = new Position(2.2, 1.0, 0);
@@ -85,6 +87,7 @@ public final class AirportFactory {
     public static Airport createKLAX() {
         Airport airport = new Airport("KLAX", "Los Angeles International", 3000);
         airport.setDifficultyMultiplier(1.6);
+        airport.setGoAroundChance(0.04);
 
         Position start24L = new Position(-1.5, -0.6, 0);
         Position end06R = new Position(1.5, 0.6, 0);
@@ -133,6 +136,7 @@ public final class AirportFactory {
     public static Airport createEGLL() {
         Airport airport = new Airport("EGLL", "London Heathrow", 3000);
         airport.setDifficultyMultiplier(2.0);
+        airport.setGoAroundChance(0.06);
 
         Position start09L = new Position(-1.2, -0.4, 0);
         Position end27R = new Position(1.8, 0.6, 0);
@@ -182,6 +186,7 @@ public final class AirportFactory {
     public static Airport createGCXO() {
         Airport airport = new Airport("GCXO", "Tenerife Norte", 3500);
         airport.setDifficultyMultiplier(2.5);
+        airport.setGoAroundChance(0.08);
 
         Position start12 = new Position(0, 0, 0);
         Position end30 = new Position(1.2, 2.0, 0);
@@ -207,6 +212,7 @@ public final class AirportFactory {
     public static Airport createBIKF() {
         Airport airport = new Airport("BIKF", "Keflavik", 2500);
         airport.setDifficultyMultiplier(3.0);
+        airport.setGoAroundChance(0.08);
 
         Position start11 = new Position(-0.8, -0.8, 0);
         Position end29 = new Position(1.2, 0.8, 0);
@@ -241,6 +247,7 @@ public final class AirportFactory {
     public static Airport createKJFK() {
         Airport airport = new Airport("KJFK", "John F. Kennedy International", 3000);
         airport.setDifficultyMultiplier(3.5);
+        airport.setGoAroundChance(0.10);
 
         Position start04L = new Position(-1.0, -0.8, 0);
         Position end22R = new Position(1.5, 0.7, 0);

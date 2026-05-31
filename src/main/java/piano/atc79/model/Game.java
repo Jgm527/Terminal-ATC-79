@@ -59,6 +59,7 @@ public class Game {
         radioTemplates.put("EVT_COLLISION", "COLISIÓN: Impacto frontal entre %s y %s.");
         radioTemplates.put("EVT_FUEL", "EMERGENCIA: %s con combustible crítico.");
         radioTemplates.put("EVT_STREAK", ">>> RACHA ×%d  |  +%,d pts");
+        radioTemplates.put("EVT_GO_AROUND", ">>> %s — aproximación frustrada, racha perdida");
     }
 
     public String getTemplate(String key) {
@@ -89,13 +90,20 @@ public class Game {
 
             if (f.getStatus().equals(FlightStatus.LANDING)) {
                 if (f.getSpeed() <= 0 && f.getCurrentPosition().getZ() <= 5) {
-                    int pts = (int) (100 * airport.getDifficultyMultiplier());
-                    int streakBonus = score.addLanding(pts);
-                    addEvent("EVT_LANDED", f.getCallsign(), pts);
-                    if (streakBonus > 0) {
-                        addEvent("EVT_STREAK", score.getStreakLevel(), streakBonus);
+                    // Tirar dado de aproximacion frustrada
+                    if (Math.random() < airport.getGoAroundChance()) {
+                        score.resetStreak();
+                        f.goAround();
+                        addEvent("EVT_GO_AROUND", f.getCallsign());
+                    } else {
+                        int pts = (int) (100 * airport.getDifficultyMultiplier());
+                        int streakBonus = score.addLanding(pts);
+                        addEvent("EVT_LANDED", f.getCallsign(), pts);
+                        if (streakBonus > 0) {
+                            addEvent("EVT_STREAK", score.getStreakLevel(), streakBonus);
+                        }
+                        flights.remove(i);
                     }
-                    flights.remove(i);
                     continue;
                 }
             }
